@@ -1,23 +1,23 @@
 lvgl:
   displays: my_display
   byte_order: little_endian
-  
+
   top_layer:
     widgets:
-    
-      # Temperature
+
+      # Indoor Conditions (temp + humidity)
       - label:
-          text: "-° / -°"
-          id: temperatures
+          text: "--F --%"
+          id: indoor_conditions
           text_font: clockbar_font
           align: top_left
-          x: 8
+          x: 12
           y: 8
           text_color: 0xFFFFFF
 
-      # Clock
+      # Dual Timezone Clock
       - label:
-          text: "--:--"
+          text: "--:-- -- ET | --:-- -- PT"
           id: display_time
           text_font: clockbar_font
           align: top_mid
@@ -25,388 +25,507 @@ lvgl:
           y: 8
           text_align: center
           text_color: 0xFFFFFF
-          
+
+      # Outdoor Temperature
+      - label:
+          text: "--F"
+          id: outdoor_temp
+          text_font: clockbar_font
+          align: top_right
+          x: -12
+          y: 8
+          text_color: 0xFFFFFF
+
   pages:
+    # ===== PAGE 1 - DASHBOARD =====
     - id: main_page
-      layout: 
+      layout:
         type: flex
-        flex_flow: column_wrap
-        pad_row: 10
-        pad_column: 10
+        flex_flow: row
+        pad_column: 8
       width: 100%
-      bg_color: Black
+      bg_color: 0x11111B
       bg_opa: cover
       pad_top: 42
-      pad_bottom: 5
-      pad_left: 5
-      pad_right: 5
-      
+      pad_bottom: 8
+      pad_left: 8
+      pad_right: 8
+
       widgets:
-      
-        # Office Features Scene
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_scene_features_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: scene_features_icon                
-                  text: $ledstrip
-              - label:
-                  align: bottom_left
-                  id: scene_features_label
-                  text: "Features"
-            on_press:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_features_stateful_scene
 
-        # Office Calls Scene
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_scene_calls_button
-            styles: control
+        # ---- COLUMN 1: CLIMATE ----
+        - obj:
+            width: 310
+            height: 100%
+            styles: card_style
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: start
+              pad_row: 8
             widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: office_scene_calls_icon                
-                  text: $videocall
-              - label:
-                  align: bottom_left
-                  id: office_scene_calls_label
-                  text: "Calls"
-            on_press:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_calls_stateful_scene
 
-        # Office Evening Scene
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_scene_evening_button
-            styles: control
-            widgets:
+              # Card Header
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: office_scene_evening_icon                
-                  text: $nightlight
-              - label:
-                  align: bottom_left
-                  id: office_scene_evening_label
-                  text: "Evening"
-            on_press:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_evening_stateful_scene
+                  text_font: header_font
+                  text: "Climate"
+                  text_color: 0xFFFFFF
 
-        # Office Dimmed Scene
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_scene_dimmed_button
-            styles: control
-            widgets:
+              # Current Temperature (large)
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: office_scene_dimmed_icon                
-                  text: $nightlight
-              - label:
-                  align: bottom_left
-                  id: office_scene_dimmed_label
-                  text: "Dimmed"
-            on_press:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_dimmed_stateful_scene
+                  text_font: statistics_font
+                  id: climate_current_temp
+                  text: "--F"
+                  text_color: 0xFFFFFF
 
-        # Office Blind 100%
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_blind_open_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "Open"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.office_blind
-                    position: "100"
-
-        # Office Blind 66%
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_blind_66_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "Semi Open"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.office_blind
-                    position: "66"
-
-        # Office Blind 33%
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_blind_33_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_open
-              - label:
-                  align: bottom_left
-                  text: "Semi Closed"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.office_blind
-                    position: "33"
-
-        # Office Blind 0%
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_blind_close_button
-            styles: control
-            widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $blinds_closed
-              - label:
-                  align: bottom_left
-                  text: "Close"
-            on_click:
-              - homeassistant.service:
-                  service: cover.set_cover_position
-                  data:
-                    entity_id: cover.office_blind
-                    position: "0"
-
-
-        # 3d Printer
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: printer_power_button
-            styles: control
-            widgets:
-              # Icon (shown when OFF)
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: printer_power_icon
-                  text: $printer
-              # Progress (shown when ON)
+              # Up/Down Temperature Buttons
               - obj:
-                  align: top_left
-                  id: print_progress_container
                   height: SIZE_CONTENT
-                  width: SIZE_CONTENT
-                  clickable: false
+                  width: 100%
                   layout:
                     type: flex
                     flex_flow: row
-                    flex_align_cross: end
+                    pad_column: 12
+                    flex_align_main: start
                   bg_opa: TRANSP
                   border_width: 0
                   pad_all: 0
-                  hidden: true
                   widgets:
-                    - label:
-                        text_font: statistics_font
-                        text_color: $button_text_color
-                        id: print_progress_label
-                        text: "--"
-                    - label:
-                        text_font: label_font
-                        text_color: $button_text_color
-                        text: "%"
-                        pad_bottom: 6
-              - label:
-                  align: bottom_left
-                  text: "Printer"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_3d_printer_power
+                    - button:
+                        id: temp_up_btn
+                        styles: media_transport_btn
+                        widgets:
+                          - label:
+                              text_font: $icon_font
+                              align: center
+                              text: $chevron_up
+                              text_color: 0xFFFFFF
+                        on_press:
+                          - script.execute: temp_adjust_up
+                    - button:
+                        id: temp_down_btn
+                        styles: media_transport_btn
+                        widgets:
+                          - label:
+                              text_font: $icon_font
+                              align: center
+                              text: $chevron_down
+                              text_color: 0xFFFFFF
+                        on_press:
+                          - script.execute: temp_adjust_down
 
-        # Filament Heater
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: filament_heater_button
-            styles: control
-            widgets:
-              # Icon (shown when OFF)
+              # Target Range
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: filament_heater_icon
-                  text: $filament
-              # Humidity (shown when ON)
+                  text_font: label_font
+                  id: climate_target_range
+                  text: "-- - --"
+                  text_color: 0xB0B0B0
+
+              # Mode + Action
+              - label:
+                  text_font: label_font
+                  id: climate_mode_label
+                  text: "-- - --"
+                  text_color: 0xB0B0B0
+
+              # Humidity
               - obj:
-                  align: top_left
-                  id: dryer_humidity_container
                   height: SIZE_CONTENT
-                  width: SIZE_CONTENT
-                  clickable: false
+                  width: 100%
                   layout:
                     type: flex
                     flex_flow: row
-                    flex_align_cross: end
+                    pad_column: 6
+                    flex_align_cross: center
                   bg_opa: TRANSP
                   border_width: 0
                   pad_all: 0
-                  hidden: true
                   widgets:
                     - label:
-                        text_font: statistics_font
-                        text_color: $button_text_color
-                        id: dryer_humidity_label
-                        text: "--"
+                        text_font: icon_font_small
+                        text: $water_percent
+                        text_color: 0x89B4FA
                     - label:
                         text_font: label_font
-                        text_color: $button_text_color
-                        text: "%"
-                        pad_bottom: 6
-                        pad_left: -4
-              - label:
-                  align: bottom_left
-                  text: "Dryer"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.office_filament_heater_893b
+                        id: climate_humidity
+                        text: "--%"
+                        text_color: 0xB0B0B0
 
-        # Office Aircon
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: office_aircon_button
-            styles: control
+        # ---- COLUMN 2: MEDIA ----
+        - obj:
+            width: 350
+            height: 100%
+            styles: card_style
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: start
+              pad_row: 10
             widgets:
-              - label:
-                  text_font: $icon_font
-                  align: top_left
-                  text: $aircon
-              - label:
-                  align: bottom_left
-                  text: "Aircon"
-            on_click:
-              - homeassistant.service:
-                  service: script.office_air_conditioner
 
-        # Battery Charger
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: battery_charger_button
-            styles: control
-            widgets:
+              # Card Header
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: battery_charger_icon
-                  text: $battery
-              - label:
-                  align: bottom_left
-                  id: battery_charger_label
-                  text: "Charger"
-            on_click:
-              - homeassistant.service:
-                  service: switch.toggle
-                  data:
-                    entity_id: switch.battery_charger
+                  text_font: header_font
+                  text: "3rd Floor Speaker"
+                  text_color: 0xFFFFFF
 
-        # Storage Lights
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: storage_lights_button
-            styles: control
-            widgets:
+              # Now Playing
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: storage_lights_icon
-                  text: $package
-              - label:
-                  align: bottom_left
-                  id: storage_lights_label
-                  text: "Storage"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.office_storage
+                  text_font: label_font
+                  id: media_now_playing
+                  text: "Nothing playing"
+                  text_color: 0xB0B0B0
+                  long_mode: dot
+                  width: 100%
 
-        # Network Rack
-        - button: 
-            height: $button_height
-            width: $button_width
-            checkable: true
-            id: network_rack_button
-            styles: control
+              # Transport Controls
+              - obj:
+                  height: SIZE_CONTENT
+                  width: 100%
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    pad_column: 16
+                    flex_align_main: center
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
+                  widgets:
+                    # Previous
+                    - button:
+                        id: media_prev_btn
+                        styles: media_transport_btn
+                        widgets:
+                          - label:
+                              text_font: $icon_font
+                              align: center
+                              text: $skip_previous
+                              text_color: 0xFFFFFF
+                        on_press:
+                          - homeassistant.service:
+                              service: media_player.media_previous_track
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                    # Play/Pause
+                    - button:
+                        id: media_play_btn
+                        styles: media_transport_btn
+                        widgets:
+                          - label:
+                              text_font: $icon_font
+                              align: center
+                              id: media_play_icon
+                              text: $play
+                              text_color: 0xFFFFFF
+                        on_press:
+                          - homeassistant.service:
+                              service: media_player.media_play_pause
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                    # Next
+                    - button:
+                        id: media_next_btn
+                        styles: media_transport_btn
+                        widgets:
+                          - label:
+                              text_font: $icon_font
+                              align: center
+                              text: $skip_next
+                              text_color: 0xFFFFFF
+                        on_press:
+                          - homeassistant.service:
+                              service: media_player.media_next_track
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+
+              # Volume Slider Row
+              - obj:
+                  height: SIZE_CONTENT
+                  width: 100%
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    pad_column: 10
+                    flex_align_cross: center
+                  bg_opa: TRANSP
+                  border_width: 0
+                  pad_all: 0
+                  widgets:
+                    - label:
+                        text_font: icon_font_small
+                        text: $volume_high
+                        text_color: 0x89B4FA
+                    - slider:
+                        id: volume_slider
+                        width: 200
+                        height: 8
+                        min_value: 0
+                        max_value: 100
+                        value: 30
+                        indicator:
+                          bg_color: 0x89B4FA
+                        knob:
+                          bg_color: 0xFFFFFF
+                          radius: 8
+                          width: 16
+                          height: 16
+                        on_release:
+                          - homeassistant.service:
+                              service: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                              data_template:
+                                volume_level: !lambda |-
+                                  return id(volume_slider).get_value() / 100.0;
+                    - label:
+                        text_font: label_font
+                        id: volume_label
+                        text: "30%"
+                        text_color: 0xB0B0B0
+
+        # ---- COLUMN 3: QUICK ACTIONS ----
+        - obj:
+            width: 310
+            height: 100%
+            styles: card_style
+            layout:
+              type: flex
+              flex_flow: column
+              flex_align_main: start
+              pad_row: 8
             widgets:
+
+              # Card Header
               - label:
-                  text_font: $icon_font
-                  align: top_left
-                  id: network_rack_icon
-                  text: $network
+                  text_font: header_font
+                  text: "Quick Actions"
+                  text_color: 0xFFFFFF
+
+              # Office Light
+              - button:
+                  id: light_1_btn
+                  styles: action_btn
+                  checkable: true
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $lightbulb
+                        align: left_mid
+                        text_color: 0xFFFFFF
+                    - label:
+                        text: "Office Light"
+                        align: center
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data:
+                          entity_id: light.chris_s_light
+
+              # Office Light 2
+              - button:
+                  id: light_2_btn
+                  styles: action_btn
+                  checkable: true
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $lightbulb
+                        align: left_mid
+                        text_color: 0xFFFFFF
+                    - label:
+                        text: "Office Light 2"
+                        align: center
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data:
+                          entity_id: light.chrislight2
+
+              # Loft Light
+              - button:
+                  id: light_3_btn
+                  styles: action_btn
+                  checkable: true
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $lightbulb
+                        align: left_mid
+                        text_color: 0xFFFFFF
+                    - label:
+                        text: "Loft Light"
+                        align: center
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - homeassistant.service:
+                        service: light.toggle
+                        data:
+                          entity_id: light.loft_light
+
+              # Scene Low
+              - button:
+                  id: scene_low_btn
+                  styles: action_btn
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $nightlight
+                        align: left_mid
+                        text_color: 0xFFFFFF
+                    - label:
+                        text: "Scene Low"
+                        align: center
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - homeassistant.service:
+                        service: scene.turn_on
+                        data:
+                          entity_id: scene.scene_chris_light_low
+
+              # Cameras Navigation
+              - button:
+                  id: cameras_nav_btn
+                  styles: action_btn
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $cctv
+                        align: left_mid
+                        text_color: 0xFFFFFF
+                    - label:
+                        text: "Cameras"
+                        align: center
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - lvgl.page.next:
+
+    # ===== PAGE 2 - CAMERAS (Phase 1 placeholder) =====
+    - id: cameras_page
+      layout:
+        type: flex
+        flex_flow: column
+        pad_row: 10
+      width: 100%
+      bg_color: 0x11111B
+      bg_opa: cover
+      pad_top: 42
+      pad_bottom: 8
+      pad_left: 8
+      pad_right: 8
+
+      widgets:
+
+        # Top Row: Back + Title + Refresh
+        - obj:
+            height: SIZE_CONTENT
+            width: 100%
+            layout:
+              type: flex
+              flex_flow: row
+              flex_align_cross: center
+              pad_column: 12
+            bg_opa: TRANSP
+            border_width: 0
+            pad_all: 0
+            widgets:
+              - button:
+                  id: cameras_back_btn
+                  styles: media_transport_btn
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        align: center
+                        text: $arrow_left
+                        text_color: 0xFFFFFF
+                  on_press:
+                    - lvgl.page.previous:
               - label:
-                  align: bottom_left
-                  id: network_rack_label
-                  text: "Network Rack"
-            on_click:
-              - homeassistant.service:
-                  service: light.toggle
-                  data:
-                    entity_id: light.office_network_rack
+                  text_font: header_font
+                  text: "Cameras"
+                  text_color: 0xFFFFFF
+                  flex_grow: 1
+              - button:
+                  id: cameras_refresh_btn
+                  styles: media_transport_btn
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        align: center
+                        text: $refresh
+                        text_color: 0xFFFFFF
+
+        # Camera Cards Row
+        - obj:
+            height: 100%
+            width: 100%
+            layout:
+              type: flex
+              flex_flow: row
+              pad_column: 10
+              flex_align_main: center
+            bg_opa: TRANSP
+            border_width: 0
+            pad_all: 0
+            widgets:
+
+              # Front Yard
+              - obj:
+                  width: 310
+                  height: 100%
+                  styles: card_style
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $cctv
+                        text_color: 0x585B70
+                    - label:
+                        text_font: label_font
+                        text: "Front Yard"
+                        text_color: 0x585B70
+
+              # Backyard
+              - obj:
+                  width: 310
+                  height: 100%
+                  styles: card_style
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $cctv
+                        text_color: 0x585B70
+                    - label:
+                        text_font: label_font
+                        text: "Backyard"
+                        text_color: 0x585B70
+
+              # Extra
+              - obj:
+                  width: 310
+                  height: 100%
+                  styles: card_style
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                  widgets:
+                    - label:
+                        text_font: $icon_font
+                        text: $cctv
+                        text_color: 0x585B70
+                    - label:
+                        text_font: label_font
+                        text: "Extra"
+                        text_color: 0x585B70
