@@ -16,38 +16,16 @@ sensor:
     entity_id: sensor.third_floor_temperature
     id: third_floor_temperature
     on_value:
-      - lvgl.label.update:
-          id: climate_current_temp
-          text: !lambda |-
-            static char buf[16];
-            snprintf(buf, sizeof(buf), "%.0fF", x);
-            return buf;
-      - lvgl.label.update:
-          id: indoor_conditions
-          text: !lambda |-
-            static char buf[24];
-            float h = id(third_floor_humidity).has_state() ? id(third_floor_humidity).state : 0;
-            snprintf(buf, sizeof(buf), "%.0fF %.0f%%", x, h);
-            return buf;
+      - script.execute: update_climate_labels
+      - script.execute: update_topbar_labels
 
   # Indoor Humidity
   - platform: homeassistant
     entity_id: sensor.third_floor_humidity
     id: third_floor_humidity
     on_value:
-      - lvgl.label.update:
-          id: climate_humidity
-          text: !lambda |-
-            static char buf[16];
-            snprintf(buf, sizeof(buf), "%.0f%%", x);
-            return buf;
-      - lvgl.label.update:
-          id: indoor_conditions
-          text: !lambda |-
-            static char buf[24];
-            float t = id(third_floor_temperature).has_state() ? id(third_floor_temperature).state : 0;
-            snprintf(buf, sizeof(buf), "%.0fF %.0f%%", t, x);
-            return buf;
+      - script.execute: update_climate_labels
+      - script.execute: update_topbar_labels
 
   # Outdoor Temperature (from weather entity)
   - platform: homeassistant
@@ -55,12 +33,7 @@ sensor:
     attribute: temperature
     id: outdoor_temperature
     on_value:
-      - lvgl.label.update:
-          id: outdoor_temp
-          text: !lambda |-
-            static char buf[16];
-            snprintf(buf, sizeof(buf), "%.0fF", x);
-            return buf;
+      - script.execute: update_topbar_labels
 
   # Climate Target Low
   - platform: homeassistant
@@ -71,13 +44,7 @@ sensor:
       - globals.set:
           id: target_temp_low
           value: !lambda return x;
-      - lvgl.label.update:
-          id: climate_target_range
-          text: !lambda |-
-            static char buf[24];
-            float high = id(climate_target_high).has_state() ? id(climate_target_high).state : 0;
-            snprintf(buf, sizeof(buf), "%.0f - %.0fF", x, high);
-            return buf;
+      - script.execute: update_climate_labels
 
   # Climate Target High
   - platform: homeassistant
@@ -88,13 +55,7 @@ sensor:
       - globals.set:
           id: target_temp_high
           value: !lambda return x;
-      - lvgl.label.update:
-          id: climate_target_range
-          text: !lambda |-
-            static char buf[24];
-            float low = id(climate_target_low).has_state() ? id(climate_target_low).state : 0;
-            snprintf(buf, sizeof(buf), "%.0f - %.0fF", low, x);
-            return buf;
+      - script.execute: update_climate_labels
 
   # Media Player Volume
   - platform: homeassistant
@@ -102,15 +63,7 @@ sensor:
     attribute: volume_level
     id: speaker_volume
     on_value:
-      - lvgl.slider.update:
-          id: volume_slider
-          value: !lambda return (int)(x * 100);
-      - lvgl.label.update:
-          id: volume_label
-          text: !lambda |-
-            static char buf[8];
-            snprintf(buf, sizeof(buf), "%.0f%%", x * 100);
-            return buf;
+      - script.execute: update_media_labels
 
   # Wifi Signal Strength (for top bar indicator)
   - platform: copy
@@ -119,14 +72,7 @@ sensor:
     filters:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     on_value:
-      - lvgl.label.update:
-          id: wifi_icon
-          text: !lambda |-
-            if (x > 75) return "${wifi_4}";
-            if (x > 50) return "${wifi_3}";
-            if (x > 25) return "${wifi_2}";
-            if (x > 0) return "${wifi_1}";
-            return "${wifi_alert}";
+      - script.execute: update_wifi_icon
 
 text_sensor:
 
@@ -135,7 +81,7 @@ text_sensor:
     entity_id: climate.third_floor
     id: hvac_mode
     on_value:
-      - script.execute: update_climate_mode_label
+      - script.execute: update_climate_labels
 
   # HVAC Action
   - platform: homeassistant
@@ -143,7 +89,7 @@ text_sensor:
     attribute: hvac_action
     id: hvac_action
     on_value:
-      - script.execute: update_climate_mode_label
+      - script.execute: update_climate_labels
 
   # Media Title
   - platform: homeassistant
@@ -151,22 +97,14 @@ text_sensor:
     attribute: media_title
     id: media_title
     on_value:
-      - lvgl.label.update:
-          id: media_now_playing
-          text: !lambda |-
-            if (x.empty()) return "Nothing playing";
-            return x.c_str();
+      - script.execute: update_media_labels
 
   # Media Player State (for play/pause icon)
   - platform: homeassistant
     entity_id: media_player.3rd_floor_speaker
     id: media_player_state
     on_value:
-      - lvgl.label.update:
-          id: media_play_icon
-          text: !lambda |-
-            if (x == "playing") return "${pause}";
-            return "${play}";
+      - script.execute: update_media_labels
 
 binary_sensor:
 
@@ -206,8 +144,141 @@ binary_sensor:
           state:
             checked: !lambda return x;
 
-# Scripts
+# Scripts - route all LVGL updates through scripts to avoid P4 threading issues
 script:
+
+  # Update all climate-related labels
+  - id: update_climate_labels
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(third_floor_temperature).has_state();'
+          then:
+            - lvgl.label.update:
+                id: climate_current_temp
+                text:
+                  format: "%.0fF"
+                  args: ['id(third_floor_temperature).state']
+      - if:
+          condition:
+            lambda: 'return id(third_floor_humidity).has_state();'
+          then:
+            - lvgl.label.update:
+                id: climate_humidity
+                text:
+                  format: "%.0f%%"
+                  args: ['id(third_floor_humidity).state']
+      - if:
+          condition:
+            lambda: 'return id(climate_target_low).has_state() && id(climate_target_high).has_state();'
+          then:
+            - lvgl.label.update:
+                id: climate_target_range
+                text:
+                  format: "%.0f - %.0fF"
+                  args: ['id(climate_target_low).state', 'id(climate_target_high).state']
+      - if:
+          condition:
+            lambda: 'return id(hvac_mode).has_state();'
+          then:
+            - lvgl.label.update:
+                id: climate_mode_label
+                text: !lambda |-
+                  std::string mode = id(hvac_mode).state;
+                  std::string action = id(hvac_action).has_state() ? id(hvac_action).state : "";
+                  if (!mode.empty()) mode[0] = toupper(mode[0]);
+                  if (!action.empty()) action[0] = toupper(action[0]);
+                  for (auto &c : mode) if (c == '_') c = ' ';
+                  for (auto &c : action) if (c == '_') c = ' ';
+                  static char buf[64];
+                  snprintf(buf, sizeof(buf), "%s - %s", mode.c_str(), action.c_str());
+                  return buf;
+
+  # Update media-related labels
+  - id: update_media_labels
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(media_title).has_state();'
+          then:
+            - lvgl.label.update:
+                id: media_now_playing
+                text: !lambda |-
+                  if (id(media_title).state.empty()) return "Nothing playing";
+                  return id(media_title).state.c_str();
+      - if:
+          condition:
+            lambda: 'return id(media_player_state).has_state();'
+          then:
+            - lvgl.label.update:
+                id: media_play_icon
+                text: !lambda |-
+                  if (id(media_player_state).state == "playing") return "\U000F03E4";
+                  return "\U000F040A";
+      - if:
+          condition:
+            lambda: 'return id(speaker_volume).has_state();'
+          then:
+            - lvgl.slider.update:
+                id: volume_slider
+                value: !lambda return (int)(id(speaker_volume).state * 100);
+            - lvgl.label.update:
+                id: volume_label
+                text:
+                  format: "%.0f%%"
+                  args: ['id(speaker_volume).state * 100']
+
+  # Update top bar labels
+  - id: update_topbar_labels
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(third_floor_temperature).has_state() && id(third_floor_humidity).has_state();'
+          then:
+            - lvgl.label.update:
+                id: indoor_conditions
+                text:
+                  format: "%.0fF %.0f%%"
+                  args: ['id(third_floor_temperature).state', 'id(third_floor_humidity).state']
+      - if:
+          condition:
+            lambda: 'return id(outdoor_temperature).has_state();'
+          then:
+            - lvgl.label.update:
+                id: outdoor_temp
+                text:
+                  format: "%.0fF"
+                  args: ['id(outdoor_temperature).state']
+
+  # Update wifi icon based on signal strength
+  - id: update_wifi_icon
+    mode: restart
+    then:
+      - lvgl.label.update:
+          id: wifi_icon
+          text: !lambda |-
+            float pct = id(wifi_strength_pct).has_state() ? id(wifi_strength_pct).state : 0;
+            if (pct > 75) return "\U000F092D";
+            if (pct > 50) return "\U000F0928";
+            if (pct > 25) return "\U000F0925";
+            if (pct > 0) return "\U000F0922";
+            return "\U000F092B";
+
+  # Set volume from slider (called from lvgl.yaml on_release)
+  - id: set_volume
+    then:
+      - homeassistant.service:
+          service: media_player.volume_set
+          data:
+            entity_id: media_player.3rd_floor_speaker
+          data_template:
+            volume_level: "{{ volume_level }}"
+          variables:
+            volume_level: !lambda |-
+              return lv_slider_get_value(id(volume_slider)) / 100.0f;
 
   # Adjust temperature up (+1F both setpoints)
   - id: temp_adjust_up
@@ -263,20 +334,11 @@ script:
             snprintf(buf, sizeof(buf), "%.0f - %.0fF", id(target_temp_low), id(target_temp_high));
             return buf;
 
-  # Update combined climate mode label
-  - id: update_climate_mode_label
+# Interval fallback - refresh all labels every 10s
+interval:
+  - interval: 10s
     then:
-      - lvgl.label.update:
-          id: climate_mode_label
-          text: !lambda |-
-            std::string mode = id(hvac_mode).state;
-            std::string action = id(hvac_action).state;
-            // Capitalize first letter
-            if (!mode.empty()) mode[0] = toupper(mode[0]);
-            if (!action.empty()) action[0] = toupper(action[0]);
-            // Replace underscores with spaces
-            for (auto &c : mode) if (c == '_') c = ' ';
-            for (auto &c : action) if (c == '_') c = ' ';
-            static char buf[64];
-            snprintf(buf, sizeof(buf), "%s - %s", mode.c_str(), action.c_str());
-            return buf;
+      - script.execute: update_climate_labels
+      - script.execute: update_media_labels
+      - script.execute: update_topbar_labels
+      - script.execute: update_wifi_icon

@@ -280,15 +280,7 @@ lvgl:
                           width: 16
                           height: 16
                         on_release:
-                          - homeassistant.service:
-                              service: media_player.volume_set
-                              data:
-                                entity_id: media_player.3rd_floor_speaker
-                              data_template:
-                                volume_level: "{{ volume_level }}"
-                              variables:
-                                volume_level: !lambda |-
-                                  return lv_slider_get_value(id(volume_slider)) / 100.0f;
+                          - script.execute: set_volume
                     - label:
                         text_font: label_font
                         id: volume_label
