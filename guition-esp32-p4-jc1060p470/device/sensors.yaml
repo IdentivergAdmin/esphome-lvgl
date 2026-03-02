@@ -76,24 +76,3 @@ script:
             if (pct > 0) return "\U000F0922";
             return "\U000F092B";
 
-# Test B and Test C: interval-based updates
-interval:
-  - interval: 5s
-    then:
-      # Test B: direct lvgl.label.update (no script wrapper)
-      - lvgl.label.update:
-          id: test_b_label
-          text: !lambda |-
-            if (!id(media_player_state).has_state()) return "B: no state";
-            static char buf[64];
-            snprintf(buf, sizeof(buf), "B: %s", id(media_player_state).state.c_str());
-            return buf;
-      # Test C: raw LVGL C API (bypass ESPHome wrapper)
-      - lambda: |-
-          const char *state = "C: no state";
-          static char buf[64];
-          if (id(media_player_state).has_state()) {
-            snprintf(buf, sizeof(buf), "C: %s", id(media_player_state).state.c_str());
-            state = buf;
-          }
-          lv_label_set_text(id(test_c_label), state);

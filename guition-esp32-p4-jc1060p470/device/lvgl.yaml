@@ -64,13 +64,13 @@ lvgl:
 
         # Title
         - label:
-            text: "SPEAKER UPDATE TEST"
+            text: "API CONNECTIVITY DIAGNOSTICS"
             text_font: header_font
             text_color: 0xFFFFFF
             text_align: center
             width: 100%
 
-        # Diagnostic Counter (no HA data, pure local)
+        # Tick counter (proves local execution works)
         - label:
             id: test_counter
             text: "Tick: 0"
@@ -79,33 +79,51 @@ lvgl:
             text_align: center
             width: 100%
 
-        # Test A: on_time + script (clock clone pattern)
+        # WiFi signal (local sensor, no HA needed)
         - label:
-            id: test_a_label
-            text: "A (on_time+script): ---"
+            id: wifi_db_label
+            text: "WiFi: ---"
+            text_font: label_font
+            text_color: 0x89B4FA
+            width: 100%
+
+        # API connection status
+        - label:
+            id: api_status_label
+            text: "API: --- | HA subscribed: ---"
             text_font: label_font
             text_color: 0xFFFF00
             width: 100%
 
-        # Test B: interval + direct lvgl.label.update
+        # Last connected client
         - label:
-            id: test_b_label
-            text: "B (interval+direct): ---"
+            id: last_client_label
+            text: "Last client: (none)"
             text_font: label_font
-            text_color: 0x00FFFF
+            text_color: 0xFFFFFF
             width: 100%
 
-        # Test C: interval + raw LVGL C API
+        # Speaker entity state (the actual HA pipeline test)
         - label:
-            id: test_c_label
-            text: "C (interval+raw C): ---"
+            id: speaker_state_label
+            text: "Speaker: no state"
             text_font: label_font
             text_color: 0xFF00FF
             width: 100%
 
-        # Entity being tested
+        # Decision matrix help text
         - label:
-            text: "Sensor: media_player.3rd_floor_speaker"
+            text: "If API stays NO: HA > Settings > ESPHome"
+            text_font: clockbar_font
+            text_color: 0x585B70
+            width: 100%
+        - label:
+            text: "If API YES but HA NO: log viewer only"
+            text_font: clockbar_font
+            text_color: 0x585B70
+            width: 100%
+        - label:
+            text: "If HA YES but no state: entity_id wrong"
             text_font: clockbar_font
             text_color: 0x585B70
             width: 100%

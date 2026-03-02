@@ -1,9 +1,13 @@
-# Tick counter global
+# Diagnostic globals
 globals:
   - id: tick_count
     type: int
     restore_value: no
     initial_value: '0'
+  - id: last_api_client
+    type: std::string
+    restore_value: no
+    initial_value: '"(none)"'
 
 # SNTP Time
 time:
@@ -24,9 +28,9 @@ time:
       - seconds: /5
         then:
           - script.execute: tick_update
-          - script.execute: test_a_update
+          - script.execute: update_diag_labels
 
-# Dual Timezone Clock (ET + PT) + Test Scripts
+# Dual Timezone Clock (ET + PT) + Diagnostic Scripts
 script:
   - id: time_update
     then:
@@ -62,12 +66,42 @@ script:
             snprintf(buf, sizeof(buf), "Tick: %d", id(tick_count));
             return buf;
 
-  - id: test_a_update
+  - id: update_diag_labels
     then:
+      # WiFi signal (local sensor, no HA needed)
       - lvgl.label.update:
-          id: test_a_label
+          id: wifi_db_label
           text: !lambda |-
-            if (!id(media_player_state).has_state()) return "A: no state";
+            static char buf[32];
+            if (id(wifi_signal_db).has_state()) {
+              snprintf(buf, sizeof(buf), "WiFi: %.0f dB", id(wifi_signal_db).state);
+            } else {
+              snprintf(buf, sizeof(buf), "WiFi: no reading");
+            }
+            return buf;
+      # API connection status
+      - lvgl.label.update:
+          id: api_status_label
+          text: !lambda |-
             static char buf[64];
-            snprintf(buf, sizeof(buf), "A: %s", id(media_player_state).state.c_str());
+            bool any_client = id(main_api).is_connected();
+            bool ha_subscribed = id(media_player_state).has_state();
+            snprintf(buf, sizeof(buf), "API: %s | HA subscribed: %s",
+                     any_client ? "YES" : "NO",
+                     ha_subscribed ? "YES" : "NO");
+            return buf;
+      # Last API client info
+      - lvgl.label.update:
+          id: last_client_label
+          text: !lambda |-
+            static char buf[96];
+            snprintf(buf, sizeof(buf), "Last client: %s", id(last_api_client).c_str());
+            return buf;
+      # Speaker state (the actual HA entity test)
+      - lvgl.label.update:
+          id: speaker_state_label
+          text: !lambda |-
+            if (!id(media_player_state).has_state()) return "Speaker: no state";
+            static char buf[64];
+            snprintf(buf, sizeof(buf), "Speaker: %s", id(media_player_state).state.c_str());
             return buf;
