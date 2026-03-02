@@ -18,14 +18,17 @@ sensor:
     on_value:
       - lvgl.label.update:
           id: climate_current_temp
-          text:
-            format: "%.0fF"
-            args: [ 'x' ]
+          text: !lambda |-
+            static char buf[16];
+            snprintf(buf, sizeof(buf), "%.0fF", x);
+            return buf;
       - lvgl.label.update:
           id: indoor_conditions
-          text:
-            format: "%.0fF %.0f%%"
-            args: [ 'x', 'id(third_floor_humidity).state' ]
+          text: !lambda |-
+            static char buf[24];
+            float h = id(third_floor_humidity).has_state() ? id(third_floor_humidity).state : 0;
+            snprintf(buf, sizeof(buf), "%.0fF %.0f%%", x, h);
+            return buf;
 
   # Indoor Humidity
   - platform: homeassistant
@@ -34,14 +37,17 @@ sensor:
     on_value:
       - lvgl.label.update:
           id: climate_humidity
-          text:
-            format: "%.0f%%"
-            args: [ 'x' ]
+          text: !lambda |-
+            static char buf[16];
+            snprintf(buf, sizeof(buf), "%.0f%%", x);
+            return buf;
       - lvgl.label.update:
           id: indoor_conditions
-          text:
-            format: "%.0fF %.0f%%"
-            args: [ 'id(third_floor_temperature).state', 'x' ]
+          text: !lambda |-
+            static char buf[24];
+            float t = id(third_floor_temperature).has_state() ? id(third_floor_temperature).state : 0;
+            snprintf(buf, sizeof(buf), "%.0fF %.0f%%", t, x);
+            return buf;
 
   # Outdoor Temperature (from weather entity)
   - platform: homeassistant
@@ -51,9 +57,10 @@ sensor:
     on_value:
       - lvgl.label.update:
           id: outdoor_temp
-          text:
-            format: "%.0fF"
-            args: [ 'x' ]
+          text: !lambda |-
+            static char buf[16];
+            snprintf(buf, sizeof(buf), "%.0fF", x);
+            return buf;
 
   # Climate Target Low
   - platform: homeassistant
@@ -66,9 +73,11 @@ sensor:
           value: !lambda return x;
       - lvgl.label.update:
           id: climate_target_range
-          text:
-            format: "%.0f - %.0fF"
-            args: [ 'x', 'id(climate_target_high).state' ]
+          text: !lambda |-
+            static char buf[24];
+            float high = id(climate_target_high).has_state() ? id(climate_target_high).state : 0;
+            snprintf(buf, sizeof(buf), "%.0f - %.0fF", x, high);
+            return buf;
 
   # Climate Target High
   - platform: homeassistant
@@ -81,9 +90,11 @@ sensor:
           value: !lambda return x;
       - lvgl.label.update:
           id: climate_target_range
-          text:
-            format: "%.0f - %.0fF"
-            args: [ 'id(climate_target_low).state', 'x' ]
+          text: !lambda |-
+            static char buf[24];
+            float low = id(climate_target_low).has_state() ? id(climate_target_low).state : 0;
+            snprintf(buf, sizeof(buf), "%.0f - %.0fF", low, x);
+            return buf;
 
   # Media Player Volume
   - platform: homeassistant
@@ -96,9 +107,26 @@ sensor:
           value: !lambda return (int)(x * 100);
       - lvgl.label.update:
           id: volume_label
-          text:
-            format: "%.0f%%"
-            args: [ 'x * 100' ]
+          text: !lambda |-
+            static char buf[8];
+            snprintf(buf, sizeof(buf), "%.0f%%", x * 100);
+            return buf;
+
+  # Wifi Signal Strength (for top bar indicator)
+  - platform: copy
+    source_id: wifi_signal_db
+    id: wifi_strength_pct
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    on_value:
+      - lvgl.label.update:
+          id: wifi_icon
+          text: !lambda |-
+            if (x > 75) return "${wifi_4}";
+            if (x > 50) return "${wifi_3}";
+            if (x > 25) return "${wifi_2}";
+            if (x > 0) return "${wifi_1}";
+            return "${wifi_alert}";
 
 text_sensor:
 
@@ -203,9 +231,10 @@ script:
             target_temp_high: !lambda return id(target_temp_high);
       - lvgl.label.update:
           id: climate_target_range
-          text:
-            format: "%.0f - %.0fF"
-            args: [ 'id(target_temp_low)', 'id(target_temp_high)' ]
+          text: !lambda |-
+            static char buf[24];
+            snprintf(buf, sizeof(buf), "%.0f - %.0fF", id(target_temp_low), id(target_temp_high));
+            return buf;
 
   # Adjust temperature down (-1F both setpoints)
   - id: temp_adjust_down
@@ -229,9 +258,10 @@ script:
             target_temp_high: !lambda return id(target_temp_high);
       - lvgl.label.update:
           id: climate_target_range
-          text:
-            format: "%.0f - %.0fF"
-            args: [ 'id(target_temp_low)', 'id(target_temp_high)' ]
+          text: !lambda |-
+            static char buf[24];
+            snprintf(buf, sizeof(buf), "%.0f - %.0fF", id(target_temp_low), id(target_temp_high));
+            return buf;
 
   # Update combined climate mode label
   - id: update_climate_mode_label

@@ -24,6 +24,11 @@ font:
       "\U000F07AE",  # mdi-cctv
       "\U000F0450",  # mdi-refresh
       "\U000F004D",  # mdi-arrow-left
+      "\U000F092D",  # mdi-wifi-strength-4
+      "\U000F0922",  # mdi-wifi-strength-1
+      "\U000F0925",  # mdi-wifi-strength-2
+      "\U000F0928",  # mdi-wifi-strength-3
+      "\U000F092B",  # mdi-wifi-strength-alert-outline
       ]
 
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
@@ -35,6 +40,12 @@ font:
       "\U000F0E4E",  # mdi-thermometer
       "\U000F0717",  # mdi-snowflake
       "\U000F0238",  # mdi-fire
+      "\U000F057E",  # mdi-volume-high
+      "\U000F092D",  # mdi-wifi-strength-4
+      "\U000F0922",  # mdi-wifi-strength-1
+      "\U000F0925",  # mdi-wifi-strength-2
+      "\U000F0928",  # mdi-wifi-strength-3
+      "\U000F092B",  # mdi-wifi-strength-alert-outline
       ]
 
 # Map icons to names
@@ -56,3 +67,8 @@ substitutions:
   cctv:           "\U000F07AE"
   refresh:        "\U000F0450"
   arrow_left:     "\U000F004D"
+  wifi_4:         "\U000F092D"
+  wifi_1:         "\U000F0922"
+  wifi_2:         "\U000F0925"
+  wifi_3:         "\U000F0928"
+  wifi_alert:     "\U000F092B"

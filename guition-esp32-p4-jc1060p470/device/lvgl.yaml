@@ -26,13 +26,23 @@ lvgl:
           text_align: center
           text_color: 0xFFFFFF
 
+      # Wifi Signal Icon
+      - label:
+          text: $wifi_alert
+          id: wifi_icon
+          text_font: icon_font_small
+          align: top_right
+          x: -12
+          y: 4
+          text_color: 0x585B70
+
       # Outdoor Temperature
       - label:
           text: "--F"
           id: outdoor_temp
           text_font: clockbar_font
           align: top_right
-          x: -12
+          x: -46
           y: 8
           text_color: 0xFFFFFF
 
