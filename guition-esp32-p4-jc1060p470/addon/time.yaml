@@ -1,3 +1,10 @@
+# Tick counter global
+globals:
+  - id: tick_count
+    type: int
+    restore_value: no
+    initial_value: '0'
+
 # SNTP Time
 time:
   - platform: sntp
@@ -14,8 +21,12 @@ time:
         seconds: 0
         then:
           - script.execute: time_update
+      - seconds: /5
+        then:
+          - script.execute: tick_update
+          - script.execute: test_a_update
 
-# Dual Timezone Clock (ET + PT)
+# Dual Timezone Clock (ET + PT) + Test Scripts
 script:
   - id: time_update
     then:
@@ -40,3 +51,23 @@ script:
             snprintf(time_buf, sizeof(time_buf), "%d:%02d %s ET | %d:%02d %s PT",
                      et_h12, et_min, et_ampm, pt_h12, et_min, pt_ampm);
             return time_buf;
+
+  - id: tick_update
+    then:
+      - lambda: 'id(tick_count) += 1;'
+      - lvgl.label.update:
+          id: test_counter
+          text: !lambda |-
+            static char buf[16];
+            snprintf(buf, sizeof(buf), "Tick: %d", id(tick_count));
+            return buf;
+
+  - id: test_a_update
+    then:
+      - lvgl.label.update:
+          id: test_a_label
+          text: !lambda |-
+            if (!id(media_player_state).has_state()) return "A: no state";
+            static char buf[64];
+            snprintf(buf, sizeof(buf), "A: %s", id(media_player_state).state.c_str());
+            return buf;

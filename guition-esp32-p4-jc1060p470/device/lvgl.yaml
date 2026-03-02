@@ -47,489 +47,65 @@ lvgl:
           text_color: 0xFFFFFF
 
   pages:
-    # ===== PAGE 1 - DASHBOARD =====
     - id: main_page
       layout:
         type: flex
-        flex_flow: row
-        pad_column: 8
-      width: 100%
-      bg_color: 0x11111B
-      bg_opa: cover
-      pad_top: 42
-      pad_bottom: 8
-      pad_left: 8
-      pad_right: 8
-
-      widgets:
-
-        # ---- COLUMN 1: CLIMATE ----
-        - obj:
-            width: 310
-            height: 100%
-            styles: card_style
-            layout:
-              type: flex
-              flex_flow: column
-              flex_align_main: start
-              pad_row: 8
-            widgets:
-
-              # Card Header
-              - label:
-                  text_font: header_font
-                  text: "Climate"
-                  text_color: 0xFFFFFF
-
-              # Current Temperature (large)
-              - label:
-                  text_font: statistics_font
-                  id: climate_current_temp
-                  text: "--F"
-                  text_color: 0xFFFFFF
-
-              # Up/Down Temperature Buttons
-              - obj:
-                  height: SIZE_CONTENT
-                  width: 100%
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    pad_column: 12
-                    flex_align_main: start
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  widgets:
-                    - button:
-                        id: temp_up_btn
-                        styles: media_transport_btn
-                        widgets:
-                          - label:
-                              text_font: $icon_font
-                              align: center
-                              text: $chevron_up
-                              text_color: 0xFFFFFF
-                        on_press:
-                          - script.execute: temp_adjust_up
-                    - button:
-                        id: temp_down_btn
-                        styles: media_transport_btn
-                        widgets:
-                          - label:
-                              text_font: $icon_font
-                              align: center
-                              text: $chevron_down
-                              text_color: 0xFFFFFF
-                        on_press:
-                          - script.execute: temp_adjust_down
-
-              # Target Range
-              - label:
-                  text_font: label_font
-                  id: climate_target_range
-                  text: "-- - --"
-                  text_color: 0xB0B0B0
-
-              # Mode + Action
-              - label:
-                  text_font: label_font
-                  id: climate_mode_label
-                  text: "-- - --"
-                  text_color: 0xB0B0B0
-
-              # Humidity
-              - obj:
-                  height: SIZE_CONTENT
-                  width: 100%
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    pad_column: 6
-                    flex_align_cross: center
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  widgets:
-                    - label:
-                        text_font: icon_font_small
-                        text: $water_percent
-                        text_color: 0x89B4FA
-                    - label:
-                        text_font: label_font
-                        id: climate_humidity
-                        text: "--%"
-                        text_color: 0xB0B0B0
-
-        # ---- COLUMN 2: MEDIA ----
-        - obj:
-            width: 350
-            height: 100%
-            styles: card_style
-            layout:
-              type: flex
-              flex_flow: column
-              flex_align_main: start
-              pad_row: 10
-            widgets:
-
-              # Card Header
-              - label:
-                  text_font: header_font
-                  text: "3rd Floor Speaker"
-                  text_color: 0xFFFFFF
-
-              # Now Playing
-              - label:
-                  text_font: label_font
-                  id: media_now_playing
-                  text: "Nothing playing"
-                  text_color: 0xB0B0B0
-                  long_mode: dot
-                  width: 100%
-
-              # Transport Controls
-              - obj:
-                  height: SIZE_CONTENT
-                  width: 100%
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    pad_column: 16
-                    flex_align_main: center
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  widgets:
-                    # Previous
-                    - button:
-                        id: media_prev_btn
-                        styles: media_transport_btn
-                        widgets:
-                          - label:
-                              text_font: $icon_font
-                              align: center
-                              text: $skip_previous
-                              text_color: 0xFFFFFF
-                        on_press:
-                          - homeassistant.service:
-                              service: media_player.media_previous_track
-                              data:
-                                entity_id: media_player.3rd_floor_speaker
-                    # Play/Pause
-                    - button:
-                        id: media_play_btn
-                        styles: media_transport_btn
-                        widgets:
-                          - label:
-                              text_font: $icon_font
-                              align: center
-                              id: media_play_icon
-                              text: $play
-                              text_color: 0xFFFFFF
-                        on_press:
-                          - homeassistant.service:
-                              service: media_player.media_play_pause
-                              data:
-                                entity_id: media_player.3rd_floor_speaker
-                    # Next
-                    - button:
-                        id: media_next_btn
-                        styles: media_transport_btn
-                        widgets:
-                          - label:
-                              text_font: $icon_font
-                              align: center
-                              text: $skip_next
-                              text_color: 0xFFFFFF
-                        on_press:
-                          - homeassistant.service:
-                              service: media_player.media_next_track
-                              data:
-                                entity_id: media_player.3rd_floor_speaker
-
-              # Volume Slider Row
-              - obj:
-                  height: SIZE_CONTENT
-                  width: 100%
-                  layout:
-                    type: flex
-                    flex_flow: row
-                    pad_column: 10
-                    flex_align_cross: center
-                  bg_opa: TRANSP
-                  border_width: 0
-                  pad_all: 0
-                  widgets:
-                    - label:
-                        text_font: icon_font_small
-                        text: $volume_high
-                        text_color: 0x89B4FA
-                    - slider:
-                        id: volume_slider
-                        width: 200
-                        height: 8
-                        min_value: 0
-                        max_value: 100
-                        value: 30
-                        indicator:
-                          bg_color: 0x89B4FA
-                        knob:
-                          bg_color: 0xFFFFFF
-                          radius: 8
-                          width: 16
-                          height: 16
-                        on_release:
-                          - script.execute: set_volume
-                    - label:
-                        text_font: label_font
-                        id: volume_label
-                        text: "30%"
-                        text_color: 0xB0B0B0
-
-        # ---- COLUMN 3: QUICK ACTIONS ----
-        - obj:
-            width: 310
-            height: 100%
-            styles: card_style
-            layout:
-              type: flex
-              flex_flow: column
-              flex_align_main: start
-              pad_row: 8
-            widgets:
-
-              # Card Header
-              - label:
-                  text_font: header_font
-                  text: "Quick Actions"
-                  text_color: 0xFFFFFF
-
-              # Office Light
-              - button:
-                  id: light_1_btn
-                  styles: action_btn
-                  checkable: true
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $lightbulb
-                        align: left_mid
-                        text_color: 0xFFFFFF
-                    - label:
-                        text: "Office Light"
-                        align: center
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - homeassistant.service:
-                        service: light.toggle
-                        data:
-                          entity_id: light.chris_s_light
-
-              # Office Light 2
-              - button:
-                  id: light_2_btn
-                  styles: action_btn
-                  checkable: true
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $lightbulb
-                        align: left_mid
-                        text_color: 0xFFFFFF
-                    - label:
-                        text: "Office Light 2"
-                        align: center
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - homeassistant.service:
-                        service: light.toggle
-                        data:
-                          entity_id: light.chrislight2
-
-              # Loft Light
-              - button:
-                  id: light_3_btn
-                  styles: action_btn
-                  checkable: true
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $lightbulb
-                        align: left_mid
-                        text_color: 0xFFFFFF
-                    - label:
-                        text: "Loft Light"
-                        align: center
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - homeassistant.service:
-                        service: light.toggle
-                        data:
-                          entity_id: light.loft_light
-
-              # Scene Low
-              - button:
-                  id: scene_low_btn
-                  styles: action_btn
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $nightlight
-                        align: left_mid
-                        text_color: 0xFFFFFF
-                    - label:
-                        text: "Scene Low"
-                        align: center
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - homeassistant.service:
-                        service: scene.turn_on
-                        data:
-                          entity_id: scene.scene_chris_light_low
-
-              # Cameras Navigation
-              - button:
-                  id: cameras_nav_btn
-                  styles: action_btn
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $cctv
-                        align: left_mid
-                        text_color: 0xFFFFFF
-                    - label:
-                        text: "Cameras"
-                        align: center
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - lvgl.page.next:
-
-    # ===== PAGE 2 - CAMERAS (Phase 1 placeholder) =====
-    - id: cameras_page
-      layout:
-        type: flex
         flex_flow: column
-        pad_row: 10
+        pad_row: 14
       width: 100%
       bg_color: 0x11111B
       bg_opa: cover
-      pad_top: 42
-      pad_bottom: 8
-      pad_left: 8
-      pad_right: 8
+      pad_top: 46
+      pad_bottom: 12
+      pad_left: 24
+      pad_right: 24
 
       widgets:
 
-        # Top Row: Back + Title + Refresh
-        - obj:
-            height: SIZE_CONTENT
+        # Title
+        - label:
+            text: "SPEAKER UPDATE TEST"
+            text_font: header_font
+            text_color: 0xFFFFFF
+            text_align: center
             width: 100%
-            layout:
-              type: flex
-              flex_flow: row
-              flex_align_cross: center
-              pad_column: 12
-            bg_opa: TRANSP
-            border_width: 0
-            pad_all: 0
-            widgets:
-              - button:
-                  id: cameras_back_btn
-                  styles: media_transport_btn
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        align: center
-                        text: $arrow_left
-                        text_color: 0xFFFFFF
-                  on_press:
-                    - lvgl.page.previous:
-              - label:
-                  text_font: header_font
-                  text: "Cameras"
-                  text_color: 0xFFFFFF
-                  flex_grow: 1
-              - button:
-                  id: cameras_refresh_btn
-                  styles: media_transport_btn
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        align: center
-                        text: $refresh
-                        text_color: 0xFFFFFF
 
-        # Camera Cards Row
-        - obj:
-            height: 100%
+        # Diagnostic Counter (no HA data, pure local)
+        - label:
+            id: test_counter
+            text: "Tick: 0"
+            text_font: statistics_font
+            text_color: 0x00FF00
+            text_align: center
             width: 100%
-            layout:
-              type: flex
-              flex_flow: row
-              pad_column: 10
-              flex_align_main: center
-            bg_opa: TRANSP
-            border_width: 0
-            pad_all: 0
-            widgets:
 
-              # Front Yard
-              - obj:
-                  width: 310
-                  height: 100%
-                  styles: card_style
-                  layout:
-                    type: flex
-                    flex_flow: column
-                    flex_align_main: center
-                    flex_align_cross: center
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $cctv
-                        text_color: 0x585B70
-                    - label:
-                        text_font: label_font
-                        text: "Front Yard"
-                        text_color: 0x585B70
+        # Test A: on_time + script (clock clone pattern)
+        - label:
+            id: test_a_label
+            text: "A (on_time+script): ---"
+            text_font: label_font
+            text_color: 0xFFFF00
+            width: 100%
 
-              # Backyard
-              - obj:
-                  width: 310
-                  height: 100%
-                  styles: card_style
-                  layout:
-                    type: flex
-                    flex_flow: column
-                    flex_align_main: center
-                    flex_align_cross: center
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $cctv
-                        text_color: 0x585B70
-                    - label:
-                        text_font: label_font
-                        text: "Backyard"
-                        text_color: 0x585B70
+        # Test B: interval + direct lvgl.label.update
+        - label:
+            id: test_b_label
+            text: "B (interval+direct): ---"
+            text_font: label_font
+            text_color: 0x00FFFF
+            width: 100%
 
-              # Extra
-              - obj:
-                  width: 310
-                  height: 100%
-                  styles: card_style
-                  layout:
-                    type: flex
-                    flex_flow: column
-                    flex_align_main: center
-                    flex_align_cross: center
-                  widgets:
-                    - label:
-                        text_font: $icon_font
-                        text: $cctv
-                        text_color: 0x585B70
-                    - label:
-                        text_font: label_font
-                        text: "Extra"
-                        text_color: 0x585B70
+        # Test C: interval + raw LVGL C API
+        - label:
+            id: test_c_label
+            text: "C (interval+raw C): ---"
+            text_font: label_font
+            text_color: 0xFF00FF
+            width: 100%
+
+        # Entity being tested
+        - label:
+            text: "Sensor: media_player.3rd_floor_speaker"
+            text_font: clockbar_font
+            text_color: 0x585B70
+            width: 100%

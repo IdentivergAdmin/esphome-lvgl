@@ -1,22 +1,16 @@
-# Globals for climate setpoint adjustment
-globals:
-  - id: target_temp_low
-    type: float
-    restore_value: no
-    initial_value: '66.0'
-  - id: target_temp_high
-    type: float
-    restore_value: no
-    initial_value: '75.0'
+# Speaker state sensor (HA subscription)
+text_sensor:
+  - platform: homeassistant
+    entity_id: media_player.3rd_floor_speaker
+    id: media_player_state
 
+# Temperature sensors (keep for top bar)
 sensor:
-
   # Indoor Temperature
   - platform: homeassistant
     entity_id: sensor.third_floor_temperature
     id: third_floor_temperature
     on_value:
-      - script.execute: update_climate_labels
       - script.execute: update_topbar_labels
 
   # Indoor Humidity
@@ -24,46 +18,15 @@ sensor:
     entity_id: sensor.third_floor_humidity
     id: third_floor_humidity
     on_value:
-      - script.execute: update_climate_labels
       - script.execute: update_topbar_labels
 
-  # Outdoor Temperature (from weather entity)
+  # Outdoor Temperature
   - platform: homeassistant
     entity_id: weather.third_floor
     attribute: temperature
     id: outdoor_temperature
     on_value:
       - script.execute: update_topbar_labels
-
-  # Climate Target Low
-  - platform: homeassistant
-    entity_id: climate.third_floor
-    attribute: target_temp_low
-    id: climate_target_low
-    on_value:
-      - globals.set:
-          id: target_temp_low
-          value: !lambda return x;
-      - script.execute: update_climate_labels
-
-  # Climate Target High
-  - platform: homeassistant
-    entity_id: climate.third_floor
-    attribute: target_temp_high
-    id: climate_target_high
-    on_value:
-      - globals.set:
-          id: target_temp_high
-          value: !lambda return x;
-      - script.execute: update_climate_labels
-
-  # Media Player Volume
-  - platform: homeassistant
-    entity_id: media_player.3rd_floor_speaker
-    attribute: volume_level
-    id: speaker_volume
-    on_value:
-      - script.execute: update_media_labels
 
   # Wifi Signal Strength (for top bar indicator)
   - platform: copy
@@ -74,162 +37,8 @@ sensor:
     on_value:
       - script.execute: update_wifi_icon
 
-text_sensor:
-
-  # HVAC Mode (state of climate entity)
-  - platform: homeassistant
-    entity_id: climate.third_floor
-    id: hvac_mode
-    on_value:
-      - script.execute: update_climate_labels
-
-  # HVAC Action
-  - platform: homeassistant
-    entity_id: climate.third_floor
-    attribute: hvac_action
-    id: hvac_action
-    on_value:
-      - script.execute: update_climate_labels
-
-  # Media Title
-  - platform: homeassistant
-    entity_id: media_player.3rd_floor_speaker
-    attribute: media_title
-    id: media_title
-    on_value:
-      - script.execute: update_media_labels
-
-  # Media Player State (for play/pause icon)
-  - platform: homeassistant
-    entity_id: media_player.3rd_floor_speaker
-    id: media_player_state
-    on_value:
-      - script.execute: update_media_labels
-
-binary_sensor:
-
-  # Office Light 1
-  - platform: homeassistant
-    id: light_1_state
-    entity_id: light.chris_s_light
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: light_1_btn
-          state:
-            checked: !lambda return x;
-
-  # Office Light 2
-  - platform: homeassistant
-    id: light_2_state
-    entity_id: light.chrislight2
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: light_2_btn
-          state:
-            checked: !lambda return x;
-
-  # Loft Light
-  - platform: homeassistant
-    id: light_3_state
-    entity_id: light.loft_light
-    trigger_on_initial_state: true
-    on_state:
-      then:
-        lvgl.widget.update:
-          id: light_3_btn
-          state:
-            checked: !lambda return x;
-
-# Scripts - route all LVGL updates through scripts to avoid P4 threading issues
+# Scripts for top bar updates
 script:
-
-  # Update all climate-related labels
-  - id: update_climate_labels
-    mode: restart
-    then:
-      - if:
-          condition:
-            lambda: 'return id(third_floor_temperature).has_state();'
-          then:
-            - lvgl.label.update:
-                id: climate_current_temp
-                text:
-                  format: "%.0fF"
-                  args: ['id(third_floor_temperature).state']
-      - if:
-          condition:
-            lambda: 'return id(third_floor_humidity).has_state();'
-          then:
-            - lvgl.label.update:
-                id: climate_humidity
-                text:
-                  format: "%.0f%%"
-                  args: ['id(third_floor_humidity).state']
-      - if:
-          condition:
-            lambda: 'return id(climate_target_low).has_state() && id(climate_target_high).has_state();'
-          then:
-            - lvgl.label.update:
-                id: climate_target_range
-                text:
-                  format: "%.0f - %.0fF"
-                  args: ['id(climate_target_low).state', 'id(climate_target_high).state']
-      - if:
-          condition:
-            lambda: 'return id(hvac_mode).has_state();'
-          then:
-            - lvgl.label.update:
-                id: climate_mode_label
-                text: !lambda |-
-                  std::string mode = id(hvac_mode).state;
-                  std::string action = id(hvac_action).has_state() ? id(hvac_action).state : "";
-                  if (!mode.empty()) mode[0] = toupper(mode[0]);
-                  if (!action.empty()) action[0] = toupper(action[0]);
-                  for (auto &c : mode) if (c == '_') c = ' ';
-                  for (auto &c : action) if (c == '_') c = ' ';
-                  static char buf[64];
-                  snprintf(buf, sizeof(buf), "%s - %s", mode.c_str(), action.c_str());
-                  return buf;
-
-  # Update media-related labels
-  - id: update_media_labels
-    mode: restart
-    then:
-      - if:
-          condition:
-            lambda: 'return id(media_title).has_state();'
-          then:
-            - lvgl.label.update:
-                id: media_now_playing
-                text: !lambda |-
-                  if (id(media_title).state.empty()) return "Nothing playing";
-                  return id(media_title).state.c_str();
-      - if:
-          condition:
-            lambda: 'return id(media_player_state).has_state();'
-          then:
-            - lvgl.label.update:
-                id: media_play_icon
-                text: !lambda |-
-                  if (id(media_player_state).state == "playing") return "\U000F03E4";
-                  return "\U000F040A";
-      - if:
-          condition:
-            lambda: 'return id(speaker_volume).has_state();'
-          then:
-            - lvgl.slider.update:
-                id: volume_slider
-                value: !lambda return (int)(id(speaker_volume).state * 100);
-            - lvgl.label.update:
-                id: volume_label
-                text:
-                  format: "%.0f%%"
-                  args: ['id(speaker_volume).state * 100']
-
   # Update top bar labels
   - id: update_topbar_labels
     mode: restart
@@ -267,78 +76,24 @@ script:
             if (pct > 0) return "\U000F0922";
             return "\U000F092B";
 
-  # Set volume from slider (called from lvgl.yaml on_release)
-  - id: set_volume
-    then:
-      - homeassistant.service:
-          service: media_player.volume_set
-          data:
-            entity_id: media_player.3rd_floor_speaker
-          data_template:
-            volume_level: "{{ volume_level }}"
-          variables:
-            volume_level: !lambda |-
-              return lv_slider_get_value(id(volume_slider)) / 100.0f;
-
-  # Adjust temperature up (+1F both setpoints)
-  - id: temp_adjust_up
-    then:
-      - globals.set:
-          id: target_temp_low
-          value: !lambda return id(target_temp_low) + 1.0;
-      - globals.set:
-          id: target_temp_high
-          value: !lambda return id(target_temp_high) + 1.0;
-      - homeassistant.service:
-          service: climate.set_temperature
-          data:
-            entity_id: climate.third_floor
-            hvac_mode: heat_cool
-          data_template:
-            target_temp_low: "{{ target_temp_low }}"
-            target_temp_high: "{{ target_temp_high }}"
-          variables:
-            target_temp_low: !lambda return id(target_temp_low);
-            target_temp_high: !lambda return id(target_temp_high);
-      - lvgl.label.update:
-          id: climate_target_range
-          text: !lambda |-
-            static char buf[24];
-            snprintf(buf, sizeof(buf), "%.0f - %.0fF", id(target_temp_low), id(target_temp_high));
-            return buf;
-
-  # Adjust temperature down (-1F both setpoints)
-  - id: temp_adjust_down
-    then:
-      - globals.set:
-          id: target_temp_low
-          value: !lambda return id(target_temp_low) - 1.0;
-      - globals.set:
-          id: target_temp_high
-          value: !lambda return id(target_temp_high) - 1.0;
-      - homeassistant.service:
-          service: climate.set_temperature
-          data:
-            entity_id: climate.third_floor
-            hvac_mode: heat_cool
-          data_template:
-            target_temp_low: "{{ target_temp_low }}"
-            target_temp_high: "{{ target_temp_high }}"
-          variables:
-            target_temp_low: !lambda return id(target_temp_low);
-            target_temp_high: !lambda return id(target_temp_high);
-      - lvgl.label.update:
-          id: climate_target_range
-          text: !lambda |-
-            static char buf[24];
-            snprintf(buf, sizeof(buf), "%.0f - %.0fF", id(target_temp_low), id(target_temp_high));
-            return buf;
-
-# Interval fallback - refresh all labels every 10s
+# Test B and Test C: interval-based updates
 interval:
-  - interval: 10s
+  - interval: 5s
     then:
-      - script.execute: update_climate_labels
-      - script.execute: update_media_labels
-      - script.execute: update_topbar_labels
-      - script.execute: update_wifi_icon
+      # Test B: direct lvgl.label.update (no script wrapper)
+      - lvgl.label.update:
+          id: test_b_label
+          text: !lambda |-
+            if (!id(media_player_state).has_state()) return "B: no state";
+            static char buf[64];
+            snprintf(buf, sizeof(buf), "B: %s", id(media_player_state).state.c_str());
+            return buf;
+      # Test C: raw LVGL C API (bypass ESPHome wrapper)
+      - lambda: |-
+          const char *state = "C: no state";
+          static char buf[64];
+          if (id(media_player_state).has_state()) {
+            snprintf(buf, sizeof(buf), "C: %s", id(media_player_state).state.c_str());
+            state = buf;
+          }
+          lv_label_set_text(id(test_c_label), state);
