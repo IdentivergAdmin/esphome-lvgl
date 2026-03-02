@@ -275,8 +275,10 @@ lvgl:
                               data:
                                 entity_id: media_player.3rd_floor_speaker
                               data_template:
+                                volume_level: "{{ volume_level }}"
+                              variables:
                                 volume_level: !lambda |-
-                                  return id(volume_slider).get_value() / 100.0;
+                                  return lv_slider_get_value(id(volume_slider)) / 100.0f;
                     - label:
                         text_font: label_font
                         id: volume_label

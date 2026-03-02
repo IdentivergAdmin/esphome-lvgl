@@ -196,6 +196,9 @@ script:
             entity_id: climate.third_floor
             hvac_mode: heat_cool
           data_template:
+            target_temp_low: "{{ target_temp_low }}"
+            target_temp_high: "{{ target_temp_high }}"
+          variables:
             target_temp_low: !lambda return id(target_temp_low);
             target_temp_high: !lambda return id(target_temp_high);
       - lvgl.label.update:
@@ -219,6 +222,9 @@ script:
             entity_id: climate.third_floor
             hvac_mode: heat_cool
           data_template:
+            target_temp_low: "{{ target_temp_low }}"
+            target_temp_high: "{{ target_temp_high }}"
+          variables:
             target_temp_low: !lambda return id(target_temp_low);
             target_temp_high: !lambda return id(target_temp_high);
       - lvgl.label.update:
