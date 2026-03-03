@@ -3,8 +3,49 @@ text_sensor:
   - platform: homeassistant
     entity_id: media_player.3rd_floor_speaker
     id: media_player_state
+    on_value:
+      - script.execute: update_play_state
 
-# Temperature sensors (keep for top bar)
+  # Media title attribute
+  - platform: homeassistant
+    entity_id: media_player.3rd_floor_speaker
+    attribute: media_title
+    id: media_title_attr
+    on_value:
+      - script.execute: update_media_labels
+
+  # Media artist attribute
+  - platform: homeassistant
+    entity_id: media_player.3rd_floor_speaker
+    attribute: media_artist
+    id: media_artist_attr
+    on_value:
+      - script.execute: update_media_labels
+
+  # Climate state (hvac mode)
+  - platform: homeassistant
+    entity_id: climate.third_floor
+    id: climate_state
+    on_value:
+      - script.execute: update_climate_card
+
+  # Climate hvac_action (heating/cooling/idle)
+  - platform: homeassistant
+    entity_id: climate.third_floor
+    attribute: hvac_action
+    id: climate_action
+    on_value:
+      - script.execute: update_climate_card
+
+  # Climate preset mode
+  - platform: homeassistant
+    entity_id: climate.third_floor
+    attribute: preset_mode
+    id: climate_preset
+    on_value:
+      - script.execute: update_climate_card
+
+# Temperature, humidity, weather, volume, climate target sensors
 sensor:
   # Indoor Temperature
   - platform: homeassistant
@@ -12,6 +53,7 @@ sensor:
     id: third_floor_temperature
     on_value:
       - script.execute: update_topbar_labels
+      - script.execute: update_conditions_card
 
   # Indoor Humidity
   - platform: homeassistant
@@ -19,6 +61,7 @@ sensor:
     id: third_floor_humidity
     on_value:
       - script.execute: update_topbar_labels
+      - script.execute: update_conditions_card
 
   # Outdoor Temperature
   - platform: homeassistant
@@ -36,6 +79,60 @@ sensor:
       - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
     on_value:
       - script.execute: update_wifi_icon
+
+  # Media volume level (0.0 - 1.0)
+  - platform: homeassistant
+    entity_id: media_player.3rd_floor_speaker
+    attribute: volume_level
+    id: media_volume_level
+    on_value:
+      then:
+        - if:
+            condition:
+              lambda: 'return !id(slider_moving);'
+            then:
+              - lvgl.slider.update:
+                  id: volume_slider
+                  value: !lambda 'return (int)(x * 100);'
+              - lvgl.label.update:
+                  id: volume_pct
+                  text: !lambda |-
+                    static char buf[8];
+                    snprintf(buf, sizeof(buf), "%.0f%%", x * 100);
+                    return buf;
+              - lvgl.arc.update:
+                  id: volume_arc
+                  value: !lambda 'return (int)(x * 100);'
+
+  # Climate target temp high
+  - platform: homeassistant
+    entity_id: climate.third_floor
+    attribute: target_temp_high
+    id: climate_target_high
+    on_value:
+      - script.execute: update_climate_card
+
+  # Climate target temp low
+  - platform: homeassistant
+    entity_id: climate.third_floor
+    attribute: target_temp_low
+    id: climate_target_low
+    on_value:
+      - script.execute: update_climate_card
+
+# Door status binary sensors
+binary_sensor:
+  - platform: homeassistant
+    entity_id: binary_sensor.aqara_door_and_window_sensor_door
+    id: front_door_state
+    on_state:
+      - script.execute: update_door_status
+
+  - platform: homeassistant
+    entity_id: binary_sensor.aqara_door_and_window_sensor_door_8
+    id: garage_door_state
+    on_state:
+      - script.execute: update_door_status
 
 # Scripts for top bar updates
 script:
@@ -75,4 +172,3 @@ script:
             if (pct > 25) return "\U000F0925";
             if (pct > 0) return "\U000F0922";
             return "\U000F092B";
-

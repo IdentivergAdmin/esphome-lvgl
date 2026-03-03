@@ -13,7 +13,7 @@ lvgl:
           align: top_left
           x: 12
           y: 8
-          text_color: 0xFFFFFF
+          text_color: 0xEEEEFF
 
       # Dual Timezone Clock
       - label:
@@ -24,7 +24,7 @@ lvgl:
           x: 0
           y: 8
           text_align: center
-          text_color: 0xFFFFFF
+          text_color: 0xEEEEFF
 
       # Wifi Signal Icon
       - label:
@@ -44,86 +44,565 @@ lvgl:
           align: top_right
           x: -46
           y: 8
-          text_color: 0xFFFFFF
+          text_color: 0xEEEEFF
 
   pages:
     - id: main_page
       layout:
         type: flex
-        flex_flow: column
-        pad_row: 14
+        flex_flow: row
+        pad_column: 16
       width: 100%
-      bg_color: 0x11111B
+      bg_color: 0x0A0A1A
       bg_opa: cover
-      pad_top: 46
+      pad_top: 56
       pad_bottom: 12
-      pad_left: 24
-      pad_right: 24
+      pad_left: 16
+      pad_right: 16
 
       widgets:
 
-        # Title
-        - label:
-            text: "API CONNECTIVITY DIAGNOSTICS"
-            text_font: header_font
-            text_color: 0xFFFFFF
-            text_align: center
-            width: 100%
+        # ============================================================
+        # LEFT: Media Player Card (620px)
+        # ============================================================
+        - obj:
+            id: media_card
+            styles: card_style
+            width: 620
+            height: 100%
+            layout:
+              type: flex
+              flex_flow: column
+              pad_row: 12
+            shadow_width: 4
+            shadow_color: 0x00E5FF
+            shadow_opa: 30
+            widgets:
 
-        # Tick counter (proves local execution works)
-        - label:
-            id: test_counter
-            text: "Tick: 0"
-            text_font: statistics_font
-            text_color: 0x00FF00
-            text_align: center
-            width: 100%
+              # -- Header: icon + track info --
+              - obj:
+                  width: 100%
+                  height: SIZE_CONTENT
+                  bg_opa: transparent
+                  pad_all: 0
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    pad_column: 14
+                    flex_align_cross: center
+                  widgets:
+                    # Music icon
+                    - label:
+                        id: media_icon
+                        text: $music
+                        text_font: icon_font
+                        text_color: 0x00E5FF
 
-        # WiFi signal (local sensor, no HA needed)
-        - label:
-            id: wifi_db_label
-            text: "WiFi: ---"
-            text_font: label_font
-            text_color: 0x89B4FA
-            width: 100%
+                    # Track info column
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          pad_row: 2
+                        widgets:
+                          - label:
+                              id: media_now_playing
+                              text: "Media Player"
+                              text_font: clockbar_font
+                              text_color: 0x7B7BA0
+                          - label:
+                              id: media_title
+                              text: "No media"
+                              text_font: header_font
+                              text_color: 0xEEEEFF
+                              long_mode: DOT
+                              width: 480
+                          - label:
+                              id: media_artist
+                              text: ""
+                              text_font: label_font
+                              text_color: 0xBB86FC
 
-        # API connection status
-        - label:
-            id: api_status_label
-            text: "API: --- | HA subscribed: ---"
-            text_font: label_font
-            text_color: 0xFFFF00
-            width: 100%
+              # -- Center: Transport with volume arc --
+              - obj:
+                  width: 100%
+                  height: SIZE_CONTENT
+                  bg_opa: transparent
+                  pad_all: 0
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    flex_align_main: center
+                    flex_align_cross: center
+                    pad_column: 32
+                  widgets:
+                    # Previous track button
+                    - button:
+                        id: btn_prev
+                        width: 64
+                        height: 64
+                        styles: media_transport_btn
+                        radius: 32
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.media_previous_track
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                        on_press:
+                          - lvgl.widget.update:
+                              id: btn_prev
+                              shadow_width: 12
+                              shadow_color: 0x00E5FF
+                              shadow_opa: 60
+                        on_release:
+                          - lvgl.widget.update:
+                              id: btn_prev
+                              shadow_width: 8
+                              shadow_color: 0x00E5FF
+                              shadow_opa: 30
+                        widgets:
+                          - label:
+                              text: $skip_previous
+                              text_font: icon_font
+                              text_color: 0xEEEEFF
+                              align: center
 
-        # Last connected client
-        - label:
-            id: last_client_label
-            text: "Last client: (none)"
-            text_font: label_font
-            text_color: 0xFFFFFF
-            width: 100%
+                    # Circle container with arc + play button
+                    - obj:
+                        id: circle_container
+                        width: 200
+                        height: 200
+                        radius: 100
+                        bg_color: 0x12122A
+                        border_width: 1
+                        border_color: 0x2A2A4A
+                        border_opa: cover
+                        pad_all: 0
+                        widgets:
+                          # Volume arc (display-only)
+                          - arc:
+                              id: volume_arc
+                              width: 180
+                              height: 180
+                              align: center
+                              adjustable: false
+                              min_value: 0
+                              max_value: 100
+                              value: 50
+                              rotation: 135
+                              arc_width: 6
+                              arc_color: 0x1A1A3A
+                              indicator:
+                                arc_width: 6
+                                arc_color: 0x00E5FF
+                              knob:
+                                width: 0
+                                height: 0
+                                pad_all: 0
 
-        # Speaker entity state (the actual HA pipeline test)
-        - label:
-            id: speaker_state_label
-            text: "Speaker: no state"
-            text_font: label_font
-            text_color: 0xFF00FF
-            width: 100%
+                          # Play/Pause button (centered on top of arc)
+                          - button:
+                              id: btn_play_pause
+                              width: 120
+                              height: 120
+                              radius: 60
+                              bg_color: 0x1A1A3A
+                              align: center
+                              checkable: true
+                              shadow_width: 12
+                              shadow_color: 0x00E5FF
+                              shadow_opa: 40
+                              checked:
+                                bg_color: 0xFF0066
+                                shadow_width: 24
+                                shadow_color: 0xFF0066
+                                shadow_opa: 80
+                              on_click:
+                                - homeassistant.action:
+                                    action: media_player.media_play_pause
+                                    data:
+                                      entity_id: media_player.3rd_floor_speaker
+                              widgets:
+                                - label:
+                                    id: play_pause_icon
+                                    text: $play
+                                    text_font: icon_font
+                                    text_color: 0xEEEEFF
+                                    align: center
 
-        # Decision matrix help text
-        - label:
-            text: "If API stays NO: HA > Settings > ESPHome"
-            text_font: clockbar_font
-            text_color: 0x585B70
-            width: 100%
-        - label:
-            text: "If API YES but HA NO: log viewer only"
-            text_font: clockbar_font
-            text_color: 0x585B70
-            width: 100%
-        - label:
-            text: "If HA YES but no state: entity_id wrong"
-            text_font: clockbar_font
-            text_color: 0x585B70
-            width: 100%
+                    # Next track button
+                    - button:
+                        id: btn_next
+                        width: 64
+                        height: 64
+                        styles: media_transport_btn
+                        radius: 32
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.media_next_track
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                        on_press:
+                          - lvgl.widget.update:
+                              id: btn_next
+                              shadow_width: 12
+                              shadow_color: 0x00E5FF
+                              shadow_opa: 60
+                        on_release:
+                          - lvgl.widget.update:
+                              id: btn_next
+                              shadow_width: 8
+                              shadow_color: 0x00E5FF
+                              shadow_opa: 30
+                        widgets:
+                          - label:
+                              text: $skip_next
+                              text_font: icon_font
+                              text_color: 0xEEEEFF
+                              align: center
+
+              # -- Bottom: Volume slider row --
+              - obj:
+                  width: 100%
+                  height: SIZE_CONTENT
+                  bg_opa: transparent
+                  pad_all: 0
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    flex_align_cross: center
+                    pad_column: 12
+                  widgets:
+                    # Volume icon
+                    - label:
+                        id: volume_icon
+                        text: $volume_high
+                        text_font: icon_font_small
+                        text_color: 0x7B7BA0
+
+                    # Volume slider
+                    - slider:
+                        id: volume_slider
+                        min_value: 0
+                        max_value: 100
+                        value: 50
+                        width: 430
+                        height: 6
+                        adv_hittest: true
+                        bg_color: 0x1A1A3A
+                        indicator:
+                          bg_color: 0x00E5FF
+                        knob:
+                          bg_color: 0xEEEEFF
+                          radius: 12
+                        on_press:
+                          - lambda: 'id(slider_moving) = true;'
+                        on_release:
+                          - lambda: 'id(slider_moving) = false;'
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                              data_template:
+                                volume_level: !lambda |-
+                                  return id(volume_slider).get_value() / 100.0;
+
+                    # Volume percentage label
+                    - label:
+                        id: volume_pct
+                        text: "50%"
+                        text_font: clockbar_font
+                        text_color: 0x7B7BA0
+                        width: 48
+                        text_align: right
+
+        # ============================================================
+        # RIGHT COLUMN (fills remaining ~340px)
+        # ============================================================
+        - obj:
+            id: right_column
+            height: 100%
+            bg_opa: transparent
+            pad_all: 0
+            flex_grow: 1
+            layout:
+              type: flex
+              flex_flow: column
+              pad_row: 12
+            widgets:
+
+              # -- Room Conditions Card --
+              - obj:
+                  id: conditions_card
+                  styles: card_style
+                  width: 100%
+                  height: 200
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    flex_align_main: space_evenly
+                    flex_align_cross: center
+                  widgets:
+                    # Temperature group
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          flex_align_main: center
+                          flex_align_cross: center
+                          pad_row: 4
+                        widgets:
+                          - label:
+                              id: temp_icon
+                              text: $thermometer
+                              text_font: icon_font
+                              text_color: 0xFF8C00
+                          - label:
+                              id: room_temp_value
+                              text: "--"
+                              text_font: statistics_font
+                              text_color: 0xEEEEFF
+                          - label:
+                              id: temp_unit_label
+                              text: "°F"
+                              text_font: label_font
+                              text_color: 0x7B7BA0
+
+                    # Vertical divider
+                    - obj:
+                        width: 1
+                        height: 100
+                        bg_color: 0x2A2A4A
+                        bg_opa: cover
+                        pad_all: 0
+
+                    # Humidity group
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: column
+                          flex_align_main: center
+                          flex_align_cross: center
+                          pad_row: 4
+                        widgets:
+                          - label:
+                              id: humidity_icon
+                              text: $water_percent
+                              text_font: icon_font
+                              text_color: 0x00E5FF
+                          - label:
+                              id: room_humidity_value
+                              text: "--"
+                              text_font: statistics_font
+                              text_color: 0xEEEEFF
+                          - label:
+                              id: humidity_unit_label
+                              text: "%"
+                              text_font: label_font
+                              text_color: 0x7B7BA0
+
+              # -- Door Status Row --
+              - obj:
+                  id: door_status_card
+                  styles: card_style
+                  width: 100%
+                  height: 60
+                  layout:
+                    type: flex
+                    flex_flow: row
+                    flex_align_main: space_evenly
+                    flex_align_cross: center
+                  widgets:
+                    # Front door group
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 8
+                        widgets:
+                          - label:
+                              id: front_door_icon
+                              text: $door_closed
+                              text_font: icon_font_small
+                              text_color: 0x39FF14
+                          - label:
+                              id: front_door_label
+                              text: "Front"
+                              text_font: clockbar_font
+                              text_color: 0xEEEEFF
+
+                    # Garage door group
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 8
+                        widgets:
+                          - label:
+                              id: garage_door_icon
+                              text: $garage_closed
+                              text_font: icon_font_small
+                              text_color: 0x39FF14
+                          - label:
+                              id: garage_door_label
+                              text: "Garage"
+                              text_font: clockbar_font
+                              text_color: 0xEEEEFF
+
+              # -- Climate Control Card --
+              - obj:
+                  id: climate_card
+                  styles: card_style
+                  width: 100%
+                  flex_grow: 1
+                  layout:
+                    type: flex
+                    flex_flow: column
+                    flex_align_main: center
+                    flex_align_cross: center
+                    pad_row: 8
+                  widgets:
+                    # Climate header: icon + action label
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_cross: center
+                          pad_column: 10
+                        widgets:
+                          - label:
+                              id: climate_mode_icon
+                              text: $thermometer
+                              text_font: icon_font
+                              text_color: 0x7B7BA0
+                          - label:
+                              id: climate_action_label
+                              text: "Idle"
+                              text_font: label_font
+                              text_color: 0xEEEEFF
+
+                    # Target range
+                    - label:
+                        id: climate_target_label
+                        text: "-- — --°F"
+                        text_font: header_font
+                        text_color: 0xEEEEFF
+                        text_align: center
+
+                    # Preset
+                    - label:
+                        id: climate_preset_label
+                        text: ""
+                        text_font: clockbar_font
+                        text_color: 0x7B7BA0
+                        text_align: center
+
+                    # Temp up/down buttons
+                    - obj:
+                        width: SIZE_CONTENT
+                        height: SIZE_CONTENT
+                        bg_opa: transparent
+                        pad_all: 0
+                        layout:
+                          type: flex
+                          flex_flow: row
+                          flex_align_main: center
+                          pad_column: 24
+                        widgets:
+                          # Temp down button
+                          - button:
+                              id: btn_temp_down
+                              width: 56
+                              height: 56
+                              radius: 28
+                              bg_color: 0x1A1A3A
+                              shadow_width: 0
+                              on_press:
+                                - lvgl.widget.update:
+                                    id: btn_temp_down
+                                    shadow_width: 8
+                                    shadow_color: 0x00E5FF
+                                    shadow_opa: 60
+                              on_release:
+                                - lvgl.widget.update:
+                                    id: btn_temp_down
+                                    shadow_width: 0
+                              on_click:
+                                - homeassistant.action:
+                                    action: climate.set_temperature
+                                    data:
+                                      entity_id: climate.third_floor
+                                      hvac_mode: heat_cool
+                                    data_template:
+                                      target_temp_high: !lambda |-
+                                        return id(climate_target_high).state - 1;
+                                      target_temp_low: !lambda |-
+                                        return id(climate_target_low).state - 1;
+                              widgets:
+                                - label:
+                                    text: $chevron_down
+                                    text_font: icon_font
+                                    text_color: 0x00E5FF
+                                    align: center
+
+                          # Temp up button
+                          - button:
+                              id: btn_temp_up
+                              width: 56
+                              height: 56
+                              radius: 28
+                              bg_color: 0x1A1A3A
+                              shadow_width: 0
+                              on_press:
+                                - lvgl.widget.update:
+                                    id: btn_temp_up
+                                    shadow_width: 8
+                                    shadow_color: 0xFF8C00
+                                    shadow_opa: 60
+                              on_release:
+                                - lvgl.widget.update:
+                                    id: btn_temp_up
+                                    shadow_width: 0
+                              on_click:
+                                - homeassistant.action:
+                                    action: climate.set_temperature
+                                    data:
+                                      entity_id: climate.third_floor
+                                      hvac_mode: heat_cool
+                                    data_template:
+                                      target_temp_high: !lambda |-
+                                        return id(climate_target_high).state + 1;
+                                      target_temp_low: !lambda |-
+                                        return id(climate_target_low).state + 1;
+                              widgets:
+                                - label:
+                                    text: $chevron_up
+                                    text_font: icon_font
+                                    text_color: 0xFF8C00
+                                    align: center

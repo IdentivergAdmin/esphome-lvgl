@@ -49,34 +49,12 @@ ota:
 
 # Enable Home Assistant API
 api:
-  id: main_api
-  on_client_connected:
-    - logger.log:
-        format: "API CLIENT CONNECTED: %s from %s"
-        args: ['client_info.c_str()', 'client_address.c_str()']
-    - lambda: |-
-        id(last_api_client) = client_info + " (" + client_address + ")";
-    - script.execute: update_diag_labels
-  on_client_disconnected:
-    - logger.log:
-        format: "API CLIENT DISCONNECTED: %s from %s"
-        args: ['client_info.c_str()', 'client_address.c_str()']
-    - script.execute: update_diag_labels
 
 # Enable logging
 logger:
-  level: VERBOSE
   logs:
-    api: VERBOSE
-    homeassistant: VERBOSE
     component: ERROR
     esp32_hosted: WARN
-    sensor: WARN
-    wifi: INFO
-    mipi_dsi: WARN
-    ledc: WARN
-    i2c: WARN
-    lvgl: WARN
 
 # Power management
 esp_ldo:

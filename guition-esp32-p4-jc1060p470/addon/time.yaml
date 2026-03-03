@@ -1,13 +1,9 @@
-# Diagnostic globals
+# Guard for volume slider feedback loop
 globals:
-  - id: tick_count
-    type: int
+  - id: slider_moving
+    type: bool
     restore_value: no
-    initial_value: '0'
-  - id: last_api_client
-    type: std::string
-    restore_value: no
-    initial_value: '"(none)"'
+    initial_value: 'false'
 
 # SNTP Time
 time:
@@ -25,13 +21,10 @@ time:
         seconds: 0
         then:
           - script.execute: time_update
-      - seconds: /5
-        then:
-          - script.execute: tick_update
-          - script.execute: update_diag_labels
 
-# Dual Timezone Clock (ET + PT) + Diagnostic Scripts
+# Production Scripts
 script:
+  # Dual Timezone Clock (ET + PT)
   - id: time_update
     then:
       - lvgl.label.update:
@@ -56,52 +49,199 @@ script:
                      et_h12, et_min, et_ampm, pt_h12, et_min, pt_ampm);
             return time_buf;
 
-  - id: tick_update
+  # Update media labels when title/artist changes
+  - id: update_media_labels
+    mode: restart
     then:
-      - lambda: 'id(tick_count) += 1;'
       - lvgl.label.update:
-          id: test_counter
+          id: media_title
           text: !lambda |-
-            static char buf[16];
-            snprintf(buf, sizeof(buf), "Tick: %d", id(tick_count));
-            return buf;
+            if (id(media_title_attr).has_state() && id(media_title_attr).state.length() > 0)
+              return id(media_title_attr).state.c_str();
+            return "No media";
+      - lvgl.label.update:
+          id: media_artist
+          text: !lambda |-
+            if (id(media_artist_attr).has_state())
+              return id(media_artist_attr).state.c_str();
+            return "";
 
-  - id: update_diag_labels
+  # Update play/pause button state
+  - id: update_play_state
+    mode: restart
     then:
-      # WiFi signal (local sensor, no HA needed)
       - lvgl.label.update:
-          id: wifi_db_label
+          id: media_now_playing
           text: !lambda |-
-            static char buf[32];
-            if (id(wifi_signal_db).has_state()) {
-              snprintf(buf, sizeof(buf), "WiFi: %.0f dB", id(wifi_signal_db).state);
-            } else {
-              snprintf(buf, sizeof(buf), "WiFi: no reading");
+            if (!id(media_player_state).has_state()) return "Media Player";
+            std::string state = id(media_player_state).state;
+            if (state == "playing") return "Now Playing";
+            if (state == "paused") return "Paused";
+            return "Idle";
+      - if:
+          condition:
+            lambda: 'return id(media_player_state).has_state() && id(media_player_state).state == "playing";'
+          then:
+            - lvgl.widget.update:
+                id: btn_play_pause
+                state:
+                  checked: true
+            - lvgl.label.update:
+                id: play_pause_icon
+                text: "\U000F03E4"
+          else:
+            - lvgl.widget.update:
+                id: btn_play_pause
+                state:
+                  checked: false
+            - lvgl.label.update:
+                id: play_pause_icon
+                text: "\U000F040A"
+
+  # Update conditions card (temp + humidity)
+  - id: update_conditions_card
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(third_floor_temperature).has_state();'
+          then:
+            - lvgl.label.update:
+                id: room_temp_value
+                text:
+                  format: "%.0f"
+                  args: ['id(third_floor_temperature).state']
+      - if:
+          condition:
+            lambda: 'return id(third_floor_humidity).has_state();'
+          then:
+            - lvgl.label.update:
+                id: room_humidity_value
+                text:
+                  format: "%.0f"
+                  args: ['id(third_floor_humidity).state']
+
+  # Update door status icons
+  - id: update_door_status
+    mode: restart
+    then:
+      - if:
+          condition:
+            lambda: 'return id(front_door_state).has_state();'
+          then:
+            - if:
+                condition:
+                  lambda: 'return id(front_door_state).state;'
+                then:
+                  - lvgl.label.update:
+                      id: front_door_icon
+                      text: "\U000F081F"
+                      text_color: 0xFF8C00
+                else:
+                  - lvgl.label.update:
+                      id: front_door_icon
+                      text: "\U000F081A"
+                      text_color: 0x39FF14
+      - if:
+          condition:
+            lambda: 'return id(garage_door_state).has_state();'
+          then:
+            - if:
+                condition:
+                  lambda: 'return id(garage_door_state).state;'
+                then:
+                  - lvgl.label.update:
+                      id: garage_door_icon
+                      text: "\U000F0804"
+                      text_color: 0xFF8C00
+                else:
+                  - lvgl.label.update:
+                      id: garage_door_icon
+                      text: "\U000F06D9"
+                      text_color: 0x39FF14
+      # Amber glow on card when any door is open
+      - if:
+          condition:
+            lambda: |-
+              bool any_open = false;
+              if (id(front_door_state).has_state() && id(front_door_state).state) any_open = true;
+              if (id(garage_door_state).has_state() && id(garage_door_state).state) any_open = true;
+              return any_open;
+          then:
+            - lvgl.widget.update:
+                id: door_status_card
+                shadow_width: 8
+                shadow_color: 0xFF8C00
+                shadow_opa: 80
+          else:
+            - lvgl.widget.update:
+                id: door_status_card
+                shadow_width: 0
+
+  # Update climate card
+  - id: update_climate_card
+    mode: restart
+    then:
+      # Mode icon + action label
+      - lvgl.label.update:
+          id: climate_mode_icon
+          text: !lambda |-
+            if (id(climate_action).has_state()) {
+              std::string action = id(climate_action).state;
+              if (action == "heating") return "\U000F0238";
+              if (action == "cooling") return "\U000F0717";
             }
-            return buf;
-      # API connection status
+            return "\U000F0E4E";
+      - if:
+          condition:
+            lambda: 'return id(climate_action).has_state() && id(climate_action).state == "heating";'
+          then:
+            - lvgl.widget.update:
+                id: climate_mode_icon
+                text_color: 0xFF8C00
+                shadow_width: 8
+                shadow_color: 0xFF8C00
+                shadow_opa: 60
+          else:
+            - if:
+                condition:
+                  lambda: 'return id(climate_action).has_state() && id(climate_action).state == "cooling";'
+                then:
+                  - lvgl.widget.update:
+                      id: climate_mode_icon
+                      text_color: 0x00E5FF
+                      shadow_width: 8
+                      shadow_color: 0x00E5FF
+                      shadow_opa: 60
+                else:
+                  - lvgl.widget.update:
+                      id: climate_mode_icon
+                      text_color: 0x7B7BA0
+                      shadow_width: 0
       - lvgl.label.update:
-          id: api_status_label
+          id: climate_action_label
           text: !lambda |-
-            static char buf[64];
-            bool any_client = id(main_api).is_connected();
-            bool ha_subscribed = id(media_player_state).has_state();
-            snprintf(buf, sizeof(buf), "API: %s | HA subscribed: %s",
-                     any_client ? "YES" : "NO",
-                     ha_subscribed ? "YES" : "NO");
-            return buf;
-      # Last API client info
+            if (!id(climate_action).has_state()) return "Off";
+            std::string action = id(climate_action).state;
+            if (action == "heating") return "Heating";
+            if (action == "cooling") return "Cooling";
+            if (action == "idle") return "Idle";
+            return "Off";
+      # Target range label
       - lvgl.label.update:
-          id: last_client_label
+          id: climate_target_label
           text: !lambda |-
-            static char buf[96];
-            snprintf(buf, sizeof(buf), "Last client: %s", id(last_api_client).c_str());
-            return buf;
-      # Speaker state (the actual HA entity test)
+            static char buf[20];
+            if (id(climate_target_low).has_state() && id(climate_target_high).has_state()) {
+              snprintf(buf, sizeof(buf), "%.0f \xe2\x80\x94 %.0f\xc2\xb0""F",
+                       id(climate_target_low).state, id(climate_target_high).state);
+              return buf;
+            }
+            return "--\xc2\xb0""F";
+      # Preset label
       - lvgl.label.update:
-          id: speaker_state_label
+          id: climate_preset_label
           text: !lambda |-
-            if (!id(media_player_state).has_state()) return "Speaker: no state";
-            static char buf[64];
-            snprintf(buf, sizeof(buf), "Speaker: %s", id(media_player_state).state.c_str());
-            return buf;
+            if (id(climate_preset).has_state() && id(climate_preset).state.length() > 0)
+              return id(climate_preset).state.c_str();
+            return "";

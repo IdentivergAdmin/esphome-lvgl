@@ -29,6 +29,10 @@ font:
       "\U000F0925",  # mdi-wifi-strength-2
       "\U000F0928",  # mdi-wifi-strength-3
       "\U000F092B",  # mdi-wifi-strength-alert-outline
+      "\U000F081A",  # mdi-door-closed
+      "\U000F081F",  # mdi-door-open
+      "\U000F06D9",  # mdi-garage
+      "\U000F0804",  # mdi-garage-open
       ]
 
   - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
@@ -46,6 +50,10 @@ font:
       "\U000F0925",  # mdi-wifi-strength-2
       "\U000F0928",  # mdi-wifi-strength-3
       "\U000F092B",  # mdi-wifi-strength-alert-outline
+      "\U000F081A",  # mdi-door-closed
+      "\U000F081F",  # mdi-door-open
+      "\U000F06D9",  # mdi-garage
+      "\U000F0804",  # mdi-garage-open
       ]
 
 # Map icons to names
@@ -72,3 +80,7 @@ substitutions:
   wifi_2:         "\U000F0925"
   wifi_3:         "\U000F0928"
   wifi_alert:     "\U000F092B"
+  door_closed:    "\U000F081A"
+  door_open:      "\U000F081F"
+  garage_closed:  "\U000F06D9"
+  garage_open:    "\U000F0804"
