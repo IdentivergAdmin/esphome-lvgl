@@ -172,7 +172,7 @@ script:
                 id: door_status_card
                 shadow_width: 8
                 shadow_color: 0xFF8C00
-                shadow_opa: 80
+                shadow_opa: 80%
           else:
             - lvgl.widget.update:
                 id: door_status_card
@@ -201,7 +201,7 @@ script:
                 text_color: 0xFF8C00
                 shadow_width: 8
                 shadow_color: 0xFF8C00
-                shadow_opa: 60
+                shadow_opa: 60%
           else:
             - if:
                 condition:
@@ -212,7 +212,7 @@ script:
                       text_color: 0x00E5FF
                       shadow_width: 8
                       shadow_color: 0x00E5FF
-                      shadow_opa: 60
+                      shadow_opa: 60%
                 else:
                   - lvgl.widget.update:
                       id: climate_mode_icon
