@@ -83,7 +83,7 @@ lvgl:
               - obj:
                   width: 100%
                   height: SIZE_CONTENT
-                  bg_opa: transparent
+                  bg_opa: TRANSP
                   pad_all: 0
                   layout:
                     type: flex
@@ -102,7 +102,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -131,7 +131,7 @@ lvgl:
               - obj:
                   width: 100%
                   height: SIZE_CONTENT
-                  bg_opa: transparent
+                  bg_opa: TRANSP
                   pad_all: 0
                   layout:
                     type: flex
@@ -269,7 +269,7 @@ lvgl:
               - obj:
                   width: 100%
                   height: SIZE_CONTENT
-                  bg_opa: transparent
+                  bg_opa: TRANSP
                   pad_all: 0
                   layout:
                     type: flex
@@ -326,7 +326,7 @@ lvgl:
         - obj:
             id: right_column
             height: 100%
-            bg_opa: transparent
+            bg_opa: TRANSP
             pad_all: 0
             flex_grow: 1
             layout:
@@ -351,7 +351,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -388,7 +388,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -429,7 +429,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -452,7 +452,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -488,7 +488,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
@@ -527,7 +527,7 @@ lvgl:
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
-                        bg_opa: transparent
+                        bg_opa: TRANSP
                         pad_all: 0
                         layout:
                           type: flex
