@@ -309,7 +309,7 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                               data_template:
                                 volume_level: !lambda |-
-                                  return id(volume_slider).get_value() / 100.0;
+                                  return lv_slider_get_value(id(volume_slider)) / 100.0;
 
                     # Volume percentage label
                     - label:
