@@ -278,7 +278,7 @@ lvgl:
                     type: flex
                     flex_flow: row
                     flex_align_cross: center
-                    pad_column: 12
+                    pad_column: 8
                   widgets:
                     # Volume icon
                     - label:
@@ -287,41 +287,72 @@ lvgl:
                         text_font: icon_font_small
                         text_color: 0x7B7BA0
 
-                    # Volume slider
-                    - slider:
-                        id: volume_slider
-                        min_value: 0
-                        max_value: 100
-                        value: 50
-                        width: 430
-                        height: 6
-                        adv_hittest: true
+                    # Volume level buttons (5 tiers)
+                    - button:
+                        id: vol_btn_1
+                        flex_grow: 1
+                        height: 40
+                        radius: 8
                         bg_color: 0x1A1A3A
-                        indicator:
-                          bg_color: 0x00E5FF
-                        knob:
-                          bg_color: 0xEEEEFF
-                          radius: 12
-                        on_press:
-                          - lambda: 'id(slider_moving) = true;'
-                        on_release:
-                          - lambda: 'id(slider_moving) = false;'
+                        shadow_width: 0
+                        on_click:
                           - homeassistant.action:
                               action: media_player.volume_set
                               data:
                                 entity_id: media_player.3rd_floor_speaker
-                              data_template:
-                                volume_level: !lambda |-
-                                  return lv_slider_get_value(id(volume_slider)) / 100.0;
-
-                    # Volume percentage label
-                    - label:
-                        id: volume_pct
-                        text: "50%"
-                        text_font: clockbar_font
-                        text_color: 0x7B7BA0
-                        width: 48
-                        text_align: right
+                                volume_level: 0.2
+                    - button:
+                        id: vol_btn_2
+                        flex_grow: 1
+                        height: 40
+                        radius: 8
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: 0.4
+                    - button:
+                        id: vol_btn_3
+                        flex_grow: 1
+                        height: 40
+                        radius: 8
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: 0.6
+                    - button:
+                        id: vol_btn_4
+                        flex_grow: 1
+                        height: 40
+                        radius: 8
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: 0.8
+                    - button:
+                        id: vol_btn_5
+                        flex_grow: 1
+                        height: 40
+                        radius: 8
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: 1.0
 
         # ============================================================
         # RIGHT COLUMN (fills remaining ~340px)

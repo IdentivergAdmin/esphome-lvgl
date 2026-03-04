@@ -101,22 +101,7 @@ sensor:
     id: media_volume_level
     on_value:
       then:
-        - if:
-            condition:
-              lambda: 'return !id(slider_moving);'
-            then:
-              - lvgl.slider.update:
-                  id: volume_slider
-                  value: !lambda 'return (int)(x * 100);'
-              - lvgl.label.update:
-                  id: volume_pct
-                  text: !lambda |-
-                    static char buf[8];
-                    snprintf(buf, sizeof(buf), "%.0f%%", x * 100);
-                    return buf;
-              - lvgl.arc.update:
-                  id: volume_arc
-                  value: !lambda 'return (int)(x * 100);'
+        - script.execute: update_volume_buttons
 
   # Climate target temp high
   - platform: homeassistant
