@@ -352,10 +352,10 @@ lvgl:
                     flex_align_cross: center
                     pad_row: 4
                   widgets:
-                    # Weather image container (150x150, all 16 stacked)
+                    # Weather image container (all 16 stacked)
                     - obj:
-                        width: 150
-                        height: 150
+                        width: 100%
+                        height: 160
                         bg_opa: TRANSP
                         pad_all: 0
                         border_width: 0
