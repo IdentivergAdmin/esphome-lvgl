@@ -91,12 +91,29 @@ lvgl:
                     pad_column: 14
                     flex_align_cross: center
                   widgets:
-                    # Music icon
-                    - label:
-                        id: media_icon
-                        text: $music
-                        text_font: icon_font
-                        text_color: 0x00E5FF
+                    # Album art / music icon container
+                    - obj:
+                        width: 140
+                        height: 140
+                        bg_opa: TRANSP
+                        pad_all: 0
+                        widgets:
+                          # Music icon fallback (visible by default)
+                          - label:
+                              id: media_icon_label
+                              text: $music
+                              text_font: icon_font
+                              text_color: 0x00E5FF
+                              align: center
+                          # Album art (hidden initially, shown on download)
+                          - obj:
+                              id: album_art_widget
+                              width: 140
+                              height: 140
+                              radius: 12
+                              bg_opa: cover
+                              bg_color: 0x12122A
+                              hidden: true
 
                     # Track info column
                     - obj:
@@ -120,7 +137,7 @@ lvgl:
                               text_font: header_font
                               text_color: 0xEEEEFF
                               long_mode: DOT
-                              width: 480
+                              width: 420
                           - label:
                               id: media_artist
                               text: ""
@@ -177,10 +194,8 @@ lvgl:
                         width: 200
                         height: 200
                         radius: 100
-                        bg_color: 0x12122A
-                        border_width: 1
-                        border_color: 0x2A2A4A
-                        border_opa: cover
+                        bg_color: 0x0A0A1A
+                        border_width: 0
                         pad_all: 0
                         widgets:
                           # Volume arc (display-only)
@@ -194,10 +209,10 @@ lvgl:
                               max_value: 100
                               value: 50
                               rotation: 135
-                              arc_width: 6
-                              arc_color: 0x1A1A3A
+                              arc_width: 8
+                              arc_color: 0x12122A
                               indicator:
-                                arc_width: 6
+                                arc_width: 8
                                 arc_color: 0x00E5FF
                               knob:
                                 width: 0
@@ -213,12 +228,12 @@ lvgl:
                               bg_color: 0x1A1A3A
                               align: center
                               checkable: true
-                              shadow_width: 12
+                              shadow_width: 16
                               shadow_color: 0x00E5FF
-                              shadow_opa: 40%
+                              shadow_opa: 50%
                               checked:
                                 bg_color: 0xFF0066
-                                shadow_width: 24
+                                shadow_width: 28
                                 shadow_color: 0xFF0066
                                 shadow_opa: 80%
                               on_click:
@@ -335,9 +350,9 @@ lvgl:
               pad_row: 12
             widgets:
 
-              # -- Room Conditions Card --
+              # -- Weather + Conditions Card --
               - obj:
-                  id: conditions_card
+                  id: weather_card
                   styles: card_style
                   width: 100%
                   height: 200
@@ -347,7 +362,95 @@ lvgl:
                     flex_align_main: space_evenly
                     flex_align_cross: center
                   widgets:
-                    # Temperature group
+                    # Weather image container (all 16 stacked, hidden by default)
+                    - obj:
+                        width: 140
+                        height: 140
+                        bg_opa: TRANSP
+                        pad_all: 0
+                        widgets:
+                          - image:
+                              id: w_sunny
+                              src: weather_sunny_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_clear_night
+                              src: weather_clear_night_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_cloudy
+                              src: weather_cloudy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_partlycloudy_sun
+                              src: weather_partlycloudy_sun_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_partlycloudy_moon
+                              src: weather_partlycloudy_moon_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_rainy
+                              src: weather_rainy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_pouring
+                              src: weather_pouring_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_snowy
+                              src: weather_snowy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_snowy_rainy
+                              src: weather_snowy_rainy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_fog
+                              src: weather_fog_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_hail
+                              src: weather_hail_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_lightning
+                              src: weather_lightning_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_lightning_rainy
+                              src: weather_lightning_rainy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_windy
+                              src: weather_windy_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_windy_variant
+                              src: weather_windy_variant_img
+                              align: center
+                              hidden: true
+                          - image:
+                              id: w_windsock
+                              src: weather_windsock_img
+                              align: center
+                              hidden: true
+
+                    # Right side: temp + divider + humidity
                     - obj:
                         width: SIZE_CONTENT
                         height: SIZE_CONTENT
@@ -358,13 +461,8 @@ lvgl:
                           flex_flow: column
                           flex_align_main: center
                           flex_align_cross: center
-                          pad_row: 4
+                          pad_row: 2
                         widgets:
-                          - label:
-                              id: temp_icon
-                              text: $thermometer
-                              text_font: icon_font
-                              text_color: 0xFF8C00
                           - label:
                               id: room_temp_value
                               text: "--"
@@ -375,37 +473,17 @@ lvgl:
                               text: "°F"
                               text_font: label_font
                               text_color: 0x7B7BA0
-
-                    # Vertical divider
-                    - obj:
-                        width: 1
-                        height: 100
-                        bg_color: 0x2A2A4A
-                        bg_opa: cover
-                        pad_all: 0
-
-                    # Humidity group
-                    - obj:
-                        width: SIZE_CONTENT
-                        height: SIZE_CONTENT
-                        bg_opa: TRANSP
-                        pad_all: 0
-                        layout:
-                          type: flex
-                          flex_flow: column
-                          flex_align_main: center
-                          flex_align_cross: center
-                          pad_row: 4
-                        widgets:
-                          - label:
-                              id: humidity_icon
-                              text: $water_percent
-                              text_font: icon_font
-                              text_color: 0x00E5FF
+                          # Horizontal divider
+                          - obj:
+                              width: 60
+                              height: 1
+                              bg_color: 0x2A2A4A
+                              bg_opa: cover
+                              pad_all: 0
                           - label:
                               id: room_humidity_value
                               text: "--"
-                              text_font: statistics_font
+                              text_font: header_font
                               text_color: 0xEEEEFF
                           - label:
                               id: humidity_unit_label

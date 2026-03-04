@@ -251,3 +251,85 @@ script:
             if (id(climate_preset).has_state() && id(climate_preset).state.length() > 0)
               return id(climate_preset).state.c_str();
             return "";
+
+  # Update weather condition image
+  - id: update_weather_image
+    mode: restart
+    then:
+      - lambda: |-
+          // Hide all weather images first
+          lv_obj_add_flag(id(w_sunny), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_clear_night), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_cloudy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_partlycloudy_sun), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_partlycloudy_moon), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_rainy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_pouring), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_snowy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_snowy_rainy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_fog), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_hail), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_lightning), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_lightning_rainy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_windy), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_windy_variant), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_add_flag(id(w_windsock), LV_OBJ_FLAG_HIDDEN);
+
+          if (!id(weather_condition).has_state()) return;
+          std::string cond = id(weather_condition).state;
+          bool is_night = id(sun_state).has_state() && id(sun_state).state == "below_horizon";
+
+          lv_obj_t *target = nullptr;
+          if (cond == "sunny" || cond == "clear-night") {
+            target = is_night ? id(w_clear_night) : id(w_sunny);
+          } else if (cond == "partlycloudy") {
+            target = is_night ? id(w_partlycloudy_moon) : id(w_partlycloudy_sun);
+          } else if (cond == "cloudy") {
+            target = id(w_cloudy);
+          } else if (cond == "rainy") {
+            target = id(w_rainy);
+          } else if (cond == "pouring") {
+            target = id(w_pouring);
+          } else if (cond == "snowy") {
+            target = id(w_snowy);
+          } else if (cond == "snowy-rainy") {
+            target = id(w_snowy_rainy);
+          } else if (cond == "fog") {
+            target = id(w_fog);
+          } else if (cond == "hail") {
+            target = id(w_hail);
+          } else if (cond == "lightning") {
+            target = id(w_lightning);
+          } else if (cond == "lightning-rainy") {
+            target = id(w_lightning_rainy);
+          } else if (cond == "windy") {
+            target = id(w_windy);
+          } else if (cond == "windy-variant") {
+            target = id(w_windy_variant);
+          } else if (cond == "exceptional") {
+            target = id(w_windsock);
+          } else {
+            target = id(w_cloudy);
+          }
+
+          if (target != nullptr) {
+            lv_obj_clear_flag(target, LV_OBJ_FLAG_HIDDEN);
+          }
+
+  # Update album art from HA entity_picture
+  - id: update_album_art
+    mode: restart
+    then:
+      - lambda: |-
+          if (!id(media_entity_picture).has_state() || id(media_entity_picture).state.empty()) {
+            lv_obj_add_flag(id(album_art_widget), LV_OBJ_FLAG_HIDDEN);
+            lv_obj_clear_flag(id(media_icon_label), LV_OBJ_FLAG_HIDDEN);
+            return;
+          }
+          std::string url = id(media_entity_picture).state;
+          if (url.size() > 0 && url[0] == '/') {
+            url = id(ha_base_url) + url;
+          }
+          lv_obj_add_flag(id(album_art_widget), LV_OBJ_FLAG_HIDDEN);
+          lv_obj_clear_flag(id(media_icon_label), LV_OBJ_FLAG_HIDDEN);
+          id(album_art_img).set_url(url);
