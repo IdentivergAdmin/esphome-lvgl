@@ -36,14 +36,6 @@ text_sensor:
     on_value:
       - script.execute: update_weather_image
 
-  # Album art URL
-  - platform: homeassistant
-    entity_id: media_player.3rd_floor_speaker
-    attribute: entity_picture
-    id: media_entity_picture
-    on_value:
-      - script.execute: update_album_art
-
   # Climate state (hvac mode)
   - platform: homeassistant
     entity_id: climate.third_floor

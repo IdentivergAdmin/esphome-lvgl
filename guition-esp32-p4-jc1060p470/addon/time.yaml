@@ -4,10 +4,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
-  - id: ha_base_url
-    type: std::string
-    restore_value: no
-    initial_value: '"http://homeassistant.local:8123"'
 
 # SNTP Time
 time:
@@ -101,8 +97,6 @@ script:
             - lvgl.label.update:
                 id: play_pause_icon
                 text: "\U000F040A"
-            - lvgl.widget.hide: album_art_widget
-            - lvgl.widget.show: media_icon_label
 
   # Update conditions card (temp + humidity)
   - id: update_conditions_card
@@ -316,20 +310,22 @@ script:
             lv_obj_clear_flag(target, LV_OBJ_FLAG_HIDDEN);
           }
 
-  # Update album art from HA entity_picture
-  - id: update_album_art
-    mode: restart
-    then:
-      - lambda: |-
-          if (!id(media_entity_picture).has_state() || id(media_entity_picture).state.empty()) {
-            lv_obj_add_flag(id(album_art_widget), LV_OBJ_FLAG_HIDDEN);
-            lv_obj_clear_flag(id(media_icon_label), LV_OBJ_FLAG_HIDDEN);
-            return;
-          }
-          std::string url = id(media_entity_picture).state;
-          if (url.size() > 0 && url[0] == '/') {
-            url = id(ha_base_url) + url;
-          }
-          lv_obj_add_flag(id(album_art_widget), LV_OBJ_FLAG_HIDDEN);
-          lv_obj_clear_flag(id(media_icon_label), LV_OBJ_FLAG_HIDDEN);
-          id(album_art_img).set_url(url);
+          // Update condition text label
+          std::string label = "";
+          if (cond == "sunny") label = "Sunny";
+          else if (cond == "clear-night") label = "Clear";
+          else if (cond == "partlycloudy") label = "Partly Cloudy";
+          else if (cond == "cloudy") label = "Cloudy";
+          else if (cond == "rainy") label = "Rain";
+          else if (cond == "pouring") label = "Heavy Rain";
+          else if (cond == "snowy") label = "Snow";
+          else if (cond == "snowy-rainy") label = "Sleet";
+          else if (cond == "fog") label = "Fog";
+          else if (cond == "hail") label = "Hail";
+          else if (cond == "lightning") label = "Thunder";
+          else if (cond == "lightning-rainy") label = "Thunderstorm";
+          else if (cond == "windy") label = "Windy";
+          else if (cond == "windy-variant") label = "Windy";
+          else if (cond == "exceptional") label = "Severe";
+          lv_label_set_text(id(weather_condition_label), label.c_str());
+

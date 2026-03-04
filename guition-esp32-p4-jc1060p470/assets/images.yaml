@@ -1,11 +1,9 @@
-http_request:
-
 image:
   defaults:
     type: rgb565
     transparency: alpha_channel
     byte_order: little_endian
-    resize: 120x120
+    resize: 140x140
   images:
     - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/sunny.png"
       id: weather_sunny_img
@@ -39,18 +37,3 @@ image:
       id: weather_windy_variant_img
     - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/windsock.png"
       id: weather_windsock_img
-
-online_image:
-  - url: "https://brands.home-assistant.io/_/esphome/logo.png"
-    format: PNG
-    type: RGB565
-    transparency: opaque
-    resize: 140x140
-    byte_order: little_endian
-    id: album_art_img
-    on_download_finished:
-      - lvgl.obj.update:
-          id: album_art_widget
-          bg_image_src: album_art_img
-      - lvgl.widget.show: album_art_widget
-      - lvgl.widget.hide: media_icon_label

@@ -16,11 +16,9 @@ lvgl:
 
     - id: card_style
       bg_color: $card_bg_color
-      radius: 12
+      radius: 16
       pad_all: 14
-      border_width: 1
-      border_color: 0x2A2A4A
-      border_opa: cover
+      border_width: 0
 
     - id: media_transport_btn
       bg_color: $button_control_color
