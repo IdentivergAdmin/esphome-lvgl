@@ -22,6 +22,28 @@ text_sensor:
     on_value:
       - script.execute: update_media_labels
 
+  # Weather condition (sunny, cloudy, rainy, etc.)
+  - platform: homeassistant
+    entity_id: weather.third_floor
+    id: weather_condition
+    on_value:
+      - script.execute: update_weather_image
+
+  # Sun position (day/night image variants)
+  - platform: homeassistant
+    entity_id: sun.sun
+    id: sun_state
+    on_value:
+      - script.execute: update_weather_image
+
+  # Album art URL
+  - platform: homeassistant
+    entity_id: media_player.3rd_floor_speaker
+    attribute: entity_picture
+    id: media_entity_picture
+    on_value:
+      - script.execute: update_album_art
+
   # Climate state (hvac mode)
   - platform: homeassistant
     entity_id: climate.third_floor

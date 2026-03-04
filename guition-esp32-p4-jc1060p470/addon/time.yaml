@@ -4,6 +4,10 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
+  - id: ha_base_url
+    type: std::string
+    restore_value: no
+    initial_value: '"http://homeassistant.local:8123"'
 
 # SNTP Time
 time:
@@ -97,6 +101,8 @@ script:
             - lvgl.label.update:
                 id: play_pause_icon
                 text: "\U000F040A"
+            - lvgl.widget.hide: album_art_widget
+            - lvgl.widget.show: media_icon_label
 
   # Update conditions card (temp + humidity)
   - id: update_conditions_card

@@ -1,0 +1,55 @@
+http_request:
+
+image:
+  defaults:
+    type: rgb565
+    transparency: alpha_channel
+    byte_order: little_endian
+    resize: 120x120
+  images:
+    - file: "assets/images/weather/sunny.png"
+      id: weather_sunny_img
+    - file: "assets/images/weather/clear_night.png"
+      id: weather_clear_night_img
+    - file: "assets/images/weather/cloudy.png"
+      id: weather_cloudy_img
+    - file: "assets/images/weather/partlycloudy_sun.png"
+      id: weather_partlycloudy_sun_img
+    - file: "assets/images/weather/partlycloudy_moon.png"
+      id: weather_partlycloudy_moon_img
+    - file: "assets/images/weather/rainy.png"
+      id: weather_rainy_img
+    - file: "assets/images/weather/pouring.png"
+      id: weather_pouring_img
+    - file: "assets/images/weather/snowy.png"
+      id: weather_snowy_img
+    - file: "assets/images/weather/snowy_rainy.png"
+      id: weather_snowy_rainy_img
+    - file: "assets/images/weather/fog.png"
+      id: weather_fog_img
+    - file: "assets/images/weather/hail.png"
+      id: weather_hail_img
+    - file: "assets/images/weather/lightning.png"
+      id: weather_lightning_img
+    - file: "assets/images/weather/lightning_rainy.png"
+      id: weather_lightning_rainy_img
+    - file: "assets/images/weather/windy.png"
+      id: weather_windy_img
+    - file: "assets/images/weather/windy_variant.png"
+      id: weather_windy_variant_img
+    - file: "assets/images/weather/windsock.png"
+      id: weather_windsock_img
+
+online_image:
+  - url: "https://brands.home-assistant.io/_/esphome/logo.png"
+    format: JPEG
+    type: RGB565
+    resize: 140x140
+    byte_order: little_endian
+    id: album_art_img
+    on_download_finished:
+      - lvgl.obj.update:
+          id: album_art_widget
+          bg_image_src: album_art_img
+      - lvgl.widget.show: album_art_widget
+      - lvgl.widget.hide: media_icon_label
