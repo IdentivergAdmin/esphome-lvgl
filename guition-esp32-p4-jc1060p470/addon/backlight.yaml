@@ -9,19 +9,45 @@ switch:
     turn_off_action:
       - light.turn_off: display_backlight
 
-# Screensaver Presence Trigger
+# Wake display action (shared by touch and presence triggers)
+script:
+  - id: wake_display
+    mode: restart
+    then:
+      - script.stop: screen_off_timer
+      - lvgl.resume:
+      - delay: 10ms
+      - switch.turn_on: backlight
+
+  # Screen sleep timer (10h after last activity)
+  - id: screen_off_timer
+    mode: restart
+    then:
+      - delay: 10h
+      - switch.turn_off: backlight
+      - lvgl.pause:
+          show_snow: true
+      - logger.log: "Screen off (10h no activity)"
+
+# Tap-to-wake: extend existing touchscreen to detect touches while LVGL is paused
+touchscreen:
+  - id: !extend my_touchscreen
+    on_touch:
+      - if:
+          condition:
+            switch.is_off: backlight
+          then:
+            - script.execute: wake_display
+            - logger.log: "Screen on (tap-to-wake)"
+
+# HA Presence (supplementary — wakes screen + resets timer)
 binary_sensor:
   - platform: homeassistant
     id: presence
     entity_id: binary_sensor.third_floor_occupancy
     on_press:
-      - lvgl.resume:
-      - delay: 10ms
-      - switch.turn_on: backlight
-      - logger.log: "Screensaver is turned off"
-
+      - script.execute: wake_display
+      - logger.log: "Screen on (presence detected)"
     on_release:
-      - switch.turn_off: backlight
-      - lvgl.pause:
-          show_snow: true
-      - logger.log: "Screensaver is turned on"
+      - script.execute: screen_off_timer
+      - logger.log: "Presence cleared, 10h sleep timer started"
