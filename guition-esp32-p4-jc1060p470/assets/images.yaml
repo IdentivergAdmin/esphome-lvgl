@@ -42,8 +42,9 @@ image:
 
 online_image:
   - url: "https://brands.home-assistant.io/_/esphome/logo.png"
-    format: JPEG
+    format: PNG
     type: RGB565
+    transparency: opaque
     resize: 140x140
     byte_order: little_endian
     id: album_art_img

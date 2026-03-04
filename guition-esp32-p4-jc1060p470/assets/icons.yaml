@@ -2,7 +2,7 @@
 
 # Define icons used
 font:
-  - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
+  - file: 'assets/fonts/materialdesignicons-webfont.ttf'
     id: icon_font
     size: 48
     bpp: 8
@@ -35,7 +35,7 @@ font:
       "\U000F0804",  # mdi-garage-open
       ]
 
-  - file: 'https://github.com/Templarian/MaterialDesign-Webfont/raw/v7.4.47/fonts/materialdesignicons-webfont.ttf'
+  - file: 'assets/fonts/materialdesignicons-webfont.ttf'
     id: icon_font_small
     size: 28
     bpp: 8
