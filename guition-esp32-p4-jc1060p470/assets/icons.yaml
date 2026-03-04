@@ -2,7 +2,7 @@
 
 # Define icons used
 font:
-  - file: 'assets/fonts/materialdesignicons-webfont.ttf'
+  - file: 'https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/fonts/materialdesignicons-webfont.ttf'
     id: icon_font
     size: 48
     bpp: 8
@@ -35,7 +35,7 @@ font:
       "\U000F0804",  # mdi-garage-open
       ]
 
-  - file: 'assets/fonts/materialdesignicons-webfont.ttf'
+  - file: 'https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/fonts/materialdesignicons-webfont.ttf'
     id: icon_font_small
     size: 28
     bpp: 8

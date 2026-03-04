@@ -7,37 +7,37 @@ image:
     byte_order: little_endian
     resize: 120x120
   images:
-    - file: "assets/images/weather/sunny.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/sunny.png"
       id: weather_sunny_img
-    - file: "assets/images/weather/clear_night.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/clear_night.png"
       id: weather_clear_night_img
-    - file: "assets/images/weather/cloudy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/cloudy.png"
       id: weather_cloudy_img
-    - file: "assets/images/weather/partlycloudy_sun.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/partlycloudy_sun.png"
       id: weather_partlycloudy_sun_img
-    - file: "assets/images/weather/partlycloudy_moon.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/partlycloudy_moon.png"
       id: weather_partlycloudy_moon_img
-    - file: "assets/images/weather/rainy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/rainy.png"
       id: weather_rainy_img
-    - file: "assets/images/weather/pouring.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/pouring.png"
       id: weather_pouring_img
-    - file: "assets/images/weather/snowy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/snowy.png"
       id: weather_snowy_img
-    - file: "assets/images/weather/snowy_rainy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/snowy_rainy.png"
       id: weather_snowy_rainy_img
-    - file: "assets/images/weather/fog.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/fog.png"
       id: weather_fog_img
-    - file: "assets/images/weather/hail.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/hail.png"
       id: weather_hail_img
-    - file: "assets/images/weather/lightning.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/lightning.png"
       id: weather_lightning_img
-    - file: "assets/images/weather/lightning_rainy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/lightning_rainy.png"
       id: weather_lightning_rainy_img
-    - file: "assets/images/weather/windy.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/windy.png"
       id: weather_windy_img
-    - file: "assets/images/weather/windy_variant.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/windy_variant.png"
       id: weather_windy_variant_img
-    - file: "assets/images/weather/windsock.png"
+    - file: "https://raw.githubusercontent.com/IdentivergAdmin/esphome-lvgl/main/guition-esp32-p4-jc1060p470/assets/images/weather/windsock.png"
       id: weather_windsock_img
 
 online_image:
