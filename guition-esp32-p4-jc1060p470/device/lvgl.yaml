@@ -287,12 +287,25 @@ lvgl:
                         text_font: icon_font_small
                         text_color: 0x7B7BA0
 
-                    # Volume level buttons (10 tiers, 10%-100%)
+                    # Volume level buttons (20 tiers, 5%-100%)
                     - button:
                         id: vol_btn_1
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.05"
+                    - button:
+                        id: vol_btn_2
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -302,10 +315,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.1"
                     - button:
-                        id: vol_btn_2
+                        id: vol_btn_3
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.15"
+                    - button:
+                        id: vol_btn_4
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -315,10 +341,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.2"
                     - button:
-                        id: vol_btn_3
+                        id: vol_btn_5
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.25"
+                    - button:
+                        id: vol_btn_6
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -328,10 +367,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.3"
                     - button:
-                        id: vol_btn_4
+                        id: vol_btn_7
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.35"
+                    - button:
+                        id: vol_btn_8
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -341,10 +393,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.4"
                     - button:
-                        id: vol_btn_5
+                        id: vol_btn_9
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.45"
+                    - button:
+                        id: vol_btn_10
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -354,10 +419,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.5"
                     - button:
-                        id: vol_btn_6
+                        id: vol_btn_11
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.55"
+                    - button:
+                        id: vol_btn_12
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -367,10 +445,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.6"
                     - button:
-                        id: vol_btn_7
+                        id: vol_btn_13
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.65"
+                    - button:
+                        id: vol_btn_14
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -380,10 +471,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.7"
                     - button:
-                        id: vol_btn_8
+                        id: vol_btn_15
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.75"
+                    - button:
+                        id: vol_btn_16
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -393,10 +497,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.8"
                     - button:
-                        id: vol_btn_9
+                        id: vol_btn_17
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.85"
+                    - button:
+                        id: vol_btn_18
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:
@@ -406,10 +523,23 @@ lvgl:
                                 entity_id: media_player.3rd_floor_speaker
                                 volume_level: "0.9"
                     - button:
-                        id: vol_btn_10
+                        id: vol_btn_19
                         flex_grow: 1
-                        height: 40
-                        radius: 6
+                        height: 35
+                        radius: 4
+                        bg_color: 0x1A1A3A
+                        shadow_width: 0
+                        on_click:
+                          - homeassistant.action:
+                              action: media_player.volume_set
+                              data:
+                                entity_id: media_player.3rd_floor_speaker
+                                volume_level: "0.95"
+                    - button:
+                        id: vol_btn_20
+                        flex_grow: 1
+                        height: 35
+                        radius: 4
                         bg_color: 0x1A1A3A
                         shadow_width: 0
                         on_click:

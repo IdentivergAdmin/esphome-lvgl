@@ -322,68 +322,128 @@ script:
           else if (cond == "exceptional") label = "Severe";
           lv_label_set_text(id(weather_condition_label), label.c_str());
 
-  # Update volume buttons (10-level neon segments)
+  # Update volume buttons (20-level neon segments)
   - id: update_volume_buttons
     mode: restart
     then:
       - lvgl.widget.update:
           id: vol_btn_1
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.05) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.05) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.025) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.025) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_2
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.15) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.15) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.075) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.075) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_3
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.25) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.25) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.125) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.125) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_4
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.35) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.35) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.175) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.175) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_5
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.45) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.45) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.225) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.225) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_6
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.55) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.55) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.275) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.275) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_7
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.65) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.65) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.325) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.325) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_8
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.75) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.75) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.375) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.375) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_9
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.85) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.85) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.425) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.425) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.widget.update:
           id: vol_btn_10
-          bg_color: !lambda 'return (id(media_volume_level).state >= 0.95) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
-          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.95) ? 8 : 0;'
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.475) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.475) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_11
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.525) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.525) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_12
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.575) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.575) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_13
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.625) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.625) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_14
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.675) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.675) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_15
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.725) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.725) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_16
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.775) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.775) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_17
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.825) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.825) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_18
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.875) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.875) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_19
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.925) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.925) ? 8 : 0;'
+          shadow_color: 0x00E5FF
+          shadow_opa: 60%
+      - lvgl.widget.update:
+          id: vol_btn_20
+          bg_color: !lambda 'return (id(media_volume_level).state >= 0.975) ? lv_color_hex(0x00E5FF) : lv_color_hex(0x1A1A3A);'
+          shadow_width: !lambda 'return (id(media_volume_level).state >= 0.975) ? 8 : 0;'
           shadow_color: 0x00E5FF
           shadow_opa: 60%
       - lvgl.arc.update:
